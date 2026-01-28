@@ -1,40 +1,52 @@
 import { Request, Response } from 'express';
-import { db } from '../store';
+import { pool } from '../db';
 import { User } from '../types';
-// Helper for simple ID generation if uuid is overkill for now
-const generateId = () => Math.random().toString(36).substr(2, 9);
 
-export const getUsers = (req: Request, res: Response) => {
-    // Return users without passwords
-    const safeUsers = db.users.map(({ password, ...user }) => user);
-    res.json(safeUsers);
-};
+const generateId = () => Math.random().toString(36).substring(2, 9);
 
-export const createUser = (req: Request, res: Response) => {
-    const { username, password, role } = req.body;
-    if (!username || !password || !role) {
-        return res.status(400).json({ message: 'Missing fields' });
+export const getUsers = async (req: Request, res: Response) => {
+    try {
+        const [rows] = await pool.execute('SELECT id, username, role FROM users');
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Database error' });
     }
-
-    const newUser: User = {
-        id: generateId(),
-        username,
-        password,
-        role
-    };
-
-    db.users.push(newUser);
-    res.status(201).json({ id: newUser.id, username, role });
 };
 
-export const loginUser = (req: Request, res: Response) => {
-    const { username, password } = req.body;
-    const user = db.users.find(u => u.username === username && u.password === password);
+export const createUser = async (req: Request, res: Response) => {
+    const { username, password, role } = req.body;
+    const newUser: User = { id: generateId(), username, password, role };
 
-    if (user) {
-        const { password, ...safeUser } = user;
-        res.json(safeUser);
-    } else {
-        res.status(401).json({ message: 'Invalid credentials' });
+    try {
+        await pool.execute(
+            'INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)',
+            [newUser.id, newUser.username, newUser.password, newUser.role]
+        );
+        res.status(201).json({ id: newUser.id, username, role });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to create user' });
+    }
+};
+
+export const loginUser = async (req: Request, res: Response) => {
+    const { username, password } = req.body;
+    try {
+        const [rows]: any = await pool.execute(
+            'SELECT * FROM users WHERE username = ? AND password = ?',
+            [username, password]
+        );
+
+        if (rows.length > 0) {
+            const user = rows[0];
+            const { password, ...userWithoutPassword } = user;
+            res.json(userWithoutPassword);
+        } else {
+            res.status(401).json({ error: 'Invalid credentials' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Login failed' });
     }
 };
