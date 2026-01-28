@@ -12,5 +12,13 @@ export const api = {
             body: JSON.stringify(data),
         });
         return res.json();
+    },
+    patch: async (endpoint: string, data: any) => {
+        const res = await fetch(`${API_URL}${endpoint}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        return res.json();
     }
 };

@@ -25,8 +25,13 @@ export default function UserDashboard() {
                 <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-magenta">
                     My Trips
                 </h1>
-                <div className="h-8 w-8 rounded-full bg-brand-cyan/20 flex items-center justify-center text-brand-cyan font-bold border border-brand-cyan">
-                    {user.username.charAt(0).toUpperCase()}
+                <div className="flex items-center gap-3">
+                    <button onClick={() => { useAuth().logout(); }} className="text-sm text-gray-500 hover:text-brand-magenta transition-colors">
+                        Logout
+                    </button>
+                    <div className="h-8 w-8 rounded-full bg-brand-cyan/20 flex items-center justify-center text-brand-cyan font-bold border border-brand-cyan">
+                        {user.username.charAt(0).toUpperCase()}
+                    </div>
                 </div>
             </div>
 

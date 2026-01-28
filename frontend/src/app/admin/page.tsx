@@ -31,7 +31,12 @@ export default function AdminDashboard() {
         <div className="p-4 bg-gradient-to-br from-gray-50 to-brand-light-cyan/30 min-h-screen">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-magenta to-brand-cyan">Admin Dashboard</h1>
-                <span className="text-sm text-gray-500 font-medium">Logged in as {user.username}</span>
+                <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-500 font-medium hidden sm:inline">Logged in as {user.username}</span>
+                    <button onClick={() => { useAuth().logout(); }} className="text-sm text-brand-magenta hover:underline font-bold">
+                        Logout
+                    </button>
+                </div>
             </div>
 
             <section className="mb-8">
