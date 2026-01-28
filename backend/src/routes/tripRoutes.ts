@@ -1,10 +1,13 @@
 import { Router } from 'express';
-import { getAllTrips, createTrip, getTripsForUser, getTripById, addExpense } from '../controllers/tripController';
+import { getAllTrips, getTripsForUser, getTripById, createTrip, addExpense, updatePersonalBudget } from '../controllers/tripController';
 
-export const tripRouter = Router();
+const router = Router();
 
-tripRouter.get('/', getAllTrips);
-tripRouter.get('/:id', getTripById);
-tripRouter.post('/', createTrip);
-tripRouter.get('/user/:userId', getTripsForUser); // Get trips assigned to a specific user
-tripRouter.post('/:id/expenses', addExpense);
+router.get('/', getAllTrips);
+router.get('/:id', getTripById);
+router.get('/user/:userId', getTripsForUser);
+router.post('/', createTrip);
+router.post('/:id/expenses', addExpense);
+router.patch('/:id/personal-budget', updatePersonalBudget);
+
+export default router;
