@@ -5,26 +5,49 @@ import { api } from '@/lib/api';
 
 export default function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('user');
 
+    const [error, setError] = useState('');
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await api.post('/users', { username, password, role });
-        setUsername('');
-        setPassword('');
-        onSuccess();
+        setError('');
+        try {
+            const res = await api.post('/users', { username, email, password, role });
+            if (res.error) {
+                setError(res.error);
+                return;
+            }
+            setUsername('');
+            setEmail('');
+            setPassword('');
+            setRole('user');
+            onSuccess();
+        } catch (err) {
+            console.error(err);
+            setError('Failed to create user. Please try again.');
+        }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="mt-4 rounded-xl border border-brand-cyan/20 p-6 bg-white/80 backdrop-blur shadow-lg">
-            <h3 className="mb-4 font-bold text-gray-800 border-b border-gray-100 pb-2">Create New User</h3>
+        <form onSubmit={handleSubmit} className="mt-4 glass-card bg-white/80 p-6 shadow-xl">
+            <h3 className="mb-4 font-bold text-gray-800 border-b border-gray-100/50 pb-2">Create New User</h3>
+            {error && <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-700 rounded-md text-sm">{error}</div>}
             <div className="space-y-4">
                 <input
                     className="w-full rounded-md border border-gray-200 p-2 focus:border-brand-cyan focus:ring-brand-cyan text-gray-900 placeholder-gray-500"
                     placeholder="Username"
                     value={username}
                     onChange={e => setUsername(e.target.value)}
+                />
+                <input
+                    className="w-full rounded-md border border-gray-200 p-2 focus:border-brand-cyan focus:ring-brand-cyan text-gray-900 placeholder-gray-500"
+                    placeholder="Email (Optional)"
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
                 />
                 <input
                     className="w-full rounded-md border border-gray-200 p-2 focus:border-brand-cyan focus:ring-brand-cyan text-gray-900 placeholder-gray-500"

@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS users (
   id VARCHAR(36) PRIMARY KEY,
   username VARCHAR(255) NOT NULL UNIQUE,
+  email VARCHAR(255),
   password VARCHAR(255) NOT NULL,
   role ENUM('admin', 'user') NOT NULL
 );
@@ -28,6 +29,7 @@ CREATE TABLE IF NOT EXISTS itinerary_items (
   trip_id VARCHAR(36),
   day INT,
   time VARCHAR(10),
+  date DATE,
   activity TEXT,
   FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
 );
@@ -43,6 +45,15 @@ CREATE TABLE IF NOT EXISTS expenses (
   type ENUM('group', 'individual') DEFAULT 'individual',
   FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS budget_logs (
+  id VARCHAR(36) PRIMARY KEY,
+  trip_id VARCHAR(36),
+  amount DECIMAL(10, 2),
+  date DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
 );
 
 -- Seed initial data

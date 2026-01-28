@@ -15,15 +15,15 @@ export const getUsers = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-    const { username, password, role } = req.body;
-    const newUser: User = { id: generateId(), username, password, role };
+    const { username, email, password, role } = req.body;
+    const newUser: User = { id: generateId(), username, email, password, role };
 
     try {
         await pool.execute(
-            'INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)',
-            [newUser.id, newUser.username, newUser.password, newUser.role]
+            'INSERT INTO users (id, username, email, password, role) VALUES (?, ?, ?, ?, ?)',
+            [newUser.id, newUser.username, newUser.email, newUser.password, newUser.role]
         );
-        res.status(201).json({ id: newUser.id, username, role });
+        res.status(201).json({ id: newUser.id, username, email, role });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to create user' });
@@ -48,5 +48,17 @@ export const loginUser = async (req: Request, res: Response) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Login failed' });
+    }
+
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    try {
+        await pool.execute('DELETE FROM users WHERE id = ?', [userId]);
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete user' });
     }
 };

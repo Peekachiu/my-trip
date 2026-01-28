@@ -8,7 +8,7 @@ import Link from 'next/link';
 type Trip = { id: string; title: string; destination: string; startDate: string; endDate: string; };
 
 export default function UserDashboard() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const [trips, setTrips] = useState<Trip[]>([]);
 
     useEffect(() => {
@@ -20,13 +20,13 @@ export default function UserDashboard() {
     if (!user) return <p className="p-4 text-brand-magenta">Loading...</p>;
 
     return (
-        <div className="p-4 min-h-screen bg-gradient-to-br from-white to-brand-light-cyan/20">
+        <div className="p-4 min-h-screen">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-magenta">
                     My Trips
                 </h1>
                 <div className="flex items-center gap-3">
-                    <button onClick={() => { useAuth().logout(); }} className="text-sm text-gray-500 hover:text-brand-magenta transition-colors">
+                    <button onClick={logout} className="text-sm text-gray-500 hover:text-brand-magenta transition-colors">
                         Logout
                     </button>
                     <div className="h-8 w-8 rounded-full bg-brand-cyan/20 flex items-center justify-center text-brand-cyan font-bold border border-brand-cyan">
@@ -44,7 +44,7 @@ export default function UserDashboard() {
                 ) : (
                     trips.map(t => (
                         <Link key={t.id} href={`/trip/${t.id}`}>
-                            <div className="group relative rounded-xl border border-brand-cyan/10 bg-white/60 backdrop-blur-sm p-5 shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 hover:bg-white/80 hover:border-brand-cyan/40">
+                            <div className="group relative glass-card p-5 hover:shadow-lg transition-all hover:-translate-y-1 hover:border-brand-cyan/40">
                                 <div className="absolute top-0 right-0 h-full w-2 rounded-r-xl bg-gradient-to-b from-brand-cyan to-brand-magenta opacity-0 transition-opacity group-hover:opacity-100" />
                                 <h3 className="text-xl font-bold text-gray-800">{t.title}</h3>
                                 <p className="text-brand-magenta font-medium">{t.destination}</p>

@@ -43,7 +43,13 @@ export const getTripById = async (req: Request, res: Response) => {
         // Get all expenses (frontend can filter by type/user or we allow all visibility)
         const [expenses]: any = await pool.execute('SELECT * FROM expenses WHERE trip_id = ?', [tripId]);
         // Get budget assignments
-        const [assignments]: any = await pool.execute('SELECT user_id, personal_budget FROM trip_assignments WHERE trip_id = ?', [tripId]);
+        const [assignments]: any = await pool.execute(
+            `SELECT ta.user_id, ta.personal_budget, u.username 
+             FROM trip_assignments ta 
+             JOIN users u ON ta.user_id = u.id 
+             WHERE ta.trip_id = ?`,
+            [tripId]
+        );
         const [assignedUsers]: any = await pool.execute('SELECT user_id FROM trip_assignments WHERE trip_id = ?', [tripId]);
 
         trip.itinerary = itinerary;
@@ -62,6 +68,9 @@ export const createTrip = async (req: Request, res: Response) => {
     const { title, destination, startDate, endDate, budget, assignedToIds, itinerary } = req.body;
     const tripId = generateId();
 
+    const start = startDate === '' ? null : startDate;
+    const end = endDate === '' ? null : endDate;
+
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
@@ -69,7 +78,7 @@ export const createTrip = async (req: Request, res: Response) => {
         // 1. Insert Trip (Group Budget)
         await connection.execute(
             'INSERT INTO trips (id, title, destination, start_date, end_date, budget) VALUES (?, ?, ?, ?, ?, ?)',
-            [tripId, title, destination, startDate, endDate, budget]
+            [tripId, title, destination, start, end, budget]
         );
 
         // 2. Insert Assignments
@@ -87,18 +96,58 @@ export const createTrip = async (req: Request, res: Response) => {
         if (itinerary && itinerary.length > 0) {
             for (const item of itinerary) {
                 await connection.execute(
-                    'INSERT INTO itinerary_items (id, trip_id, day, time, activity) VALUES (?, ?, ?, ?, ?)',
-                    [generateId(), tripId, item.day, item.time, item.activity]
+                    'INSERT INTO itinerary_items (id, trip_id, day, time, date, activity) VALUES (?, ?, ?, ?, ?, ?)',
+                    [generateId(), tripId, item.day, item.time, item.date || null, item.activity]
                 );
             }
         }
 
         await connection.commit();
-        res.status(201).json({ id: tripId, title, destination, startDate, endDate, budget });
+        res.status(201).json({ id: tripId, title, destination, startDate: start, endDate: end, budget });
     } catch (error) {
         await connection.rollback();
         console.error(error);
         res.status(500).json({ error: 'Failed to create trip' });
+    } finally {
+        connection.release();
+    }
+};
+
+export const updateTrip = async (req: Request, res: Response) => {
+    const tripId = req.params.id;
+    const { title, destination, startDate, endDate, budget, itinerary } = req.body;
+
+    const start = startDate === '' ? null : startDate;
+    const end = endDate === '' ? null : endDate;
+
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        // 1. Update Trip Details
+        await connection.execute(
+            'UPDATE trips SET title = ?, destination = ?, start_date = ?, end_date = ?, budget = ? WHERE id = ?',
+            [title, destination, start, end, budget, tripId]
+        );
+
+        // 2. Update Itinerary: Delete all old items and re-insert (Simplest for now)
+        await connection.execute('DELETE FROM itinerary_items WHERE trip_id = ?', [tripId]);
+
+        if (itinerary && itinerary.length > 0) {
+            for (const item of itinerary) {
+                await connection.execute(
+                    'INSERT INTO itinerary_items (id, trip_id, day, time, date, activity) VALUES (?, ?, ?, ?, ?, ?)',
+                    [generateId(), tripId, item.day, item.time, item.date || null, item.activity]
+                );
+            }
+        }
+
+        await connection.commit();
+        res.json({ success: true });
+    } catch (error) {
+        await connection.rollback();
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update trip' });
     } finally {
         connection.release();
     }
@@ -134,5 +183,39 @@ export const updatePersonalBudget = async (req: Request, res: Response) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to update personal budget' });
+    }
+};
+
+export const updateGroupBudget = async (req: Request, res: Response) => {
+    const tripId = req.params.id;
+    const { amount, date } = req.body; // Expect amount and date
+
+    if (!amount) return res.status(400).json({ error: 'Amount is required' });
+    const logDate = date || new Date().toISOString().split('T')[0];
+
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        // 1. Log the budget change
+        await connection.execute(
+            'INSERT INTO budget_logs (id, trip_id, amount, date) VALUES (?, ?, ?, ?)',
+            [generateId(), tripId, amount, logDate]
+        );
+
+        // 2. Update the main budget total
+        await connection.execute(
+            'UPDATE trips SET budget = budget + ? WHERE id = ?',
+            [amount, tripId]
+        );
+
+        await connection.commit();
+        res.json({ success: true, added: amount, date: logDate });
+    } catch (error) {
+        await connection.rollback();
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update group budget' });
+    } finally {
+        connection.release();
     }
 };
