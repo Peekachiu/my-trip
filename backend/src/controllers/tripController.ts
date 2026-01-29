@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { pool } from '../db';
 import { Trip, Expense, ItineraryItem } from '../types';
+import { convertCurrency } from '../lib/currency';
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
@@ -22,7 +23,12 @@ export const getTripsForUser = async (req: Request, res: Response) => {
              WHERE ta.user_id = ?`,
             [userId]
         );
-        res.json(trips);
+        const tripsMapped = trips.map((t: any) => ({
+            ...t,
+            startDate: t.start_date,
+            endDate: t.end_date
+        }));
+        res.json(tripsMapped);
     } catch (error) {
         res.status(500).json({ error: 'Database error' });
     }
@@ -54,7 +60,11 @@ export const getTripById = async (req: Request, res: Response) => {
         const [budgetLogs]: any = await pool.execute('SELECT * FROM budget_logs WHERE trip_id = ? ORDER BY date DESC, created_at DESC', [tripId]);
 
         trip.itinerary = itinerary;
-        trip.expenses = expenses;
+        trip.itinerary = itinerary;
+        trip.expenses = expenses.map((e: any) => ({
+            ...e,
+            userId: e.user_id, // Map snake_case to camelCase
+        }));
         trip.assignments = assignments;
         trip.assignedToIds = assignedUsers.map((u: any) => u.user_id);
         trip.budgetLogs = budgetLogs;
@@ -62,6 +72,7 @@ export const getTripById = async (req: Request, res: Response) => {
         // Map snake_case DB columns to camelCase for frontend
         trip.startDate = trip.start_date;
         trip.endDate = trip.end_date;
+        trip.baseCurrency = trip.base_currency || 'USD';
 
         res.json(trip);
     } catch (error) {
@@ -71,7 +82,7 @@ export const getTripById = async (req: Request, res: Response) => {
 };
 
 export const createTrip = async (req: Request, res: Response) => {
-    const { title, destination, startDate, endDate, budget, assignedToIds, itinerary } = req.body;
+    const { title, destination, startDate, endDate, budget, assignedToIds, itinerary, baseCurrency } = req.body;
     const tripId = generateId();
 
     const start = startDate === '' ? null : startDate;
@@ -83,8 +94,8 @@ export const createTrip = async (req: Request, res: Response) => {
 
         // 1. Insert Trip (Group Budget)
         await connection.execute(
-            'INSERT INTO trips (id, title, destination, start_date, end_date, budget) VALUES (?, ?, ?, ?, ?, ?)',
-            [tripId, title, destination, start, end, budget]
+            'INSERT INTO trips (id, title, destination, start_date, end_date, budget, base_currency) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [tripId, title, destination, start, end, budget, req.body.baseCurrency || 'USD']
         );
 
         // 2. Insert Assignments
@@ -192,15 +203,23 @@ export const updateTrip = async (req: Request, res: Response) => {
 
 export const addExpense = async (req: Request, res: Response) => {
     const tripId = req.params.id;
-    const { amount, category, note, date, type, userId } = req.body; // Expect type & userId
+    const { amount, category, note, date, type, userId, currency } = req.body;
     const expenseId = generateId();
+
+    // Get Base Currency of Trip
+    const [tripRows]: any = await pool.execute('SELECT base_currency FROM trips WHERE id = ?', [tripId]);
+    const baseCurrency = tripRows[0]?.base_currency || 'USD';
+    const expenseCurrency = currency || baseCurrency;
+
+    // Convert
+    const { rate } = await convertCurrency(parseFloat(amount), expenseCurrency, baseCurrency);
 
     try {
         await pool.execute(
-            'INSERT INTO expenses (id, trip_id, user_id, amount, category, note, date, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [expenseId, tripId, userId, amount, category, note, date, type || 'individual']
+            'INSERT INTO expenses (id, trip_id, user_id, amount, category, note, date, type, currency, exchange_rate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [expenseId, tripId, userId, amount, category, note, date, type || 'individual', expenseCurrency, rate]
         );
-        res.status(201).json({ id: expenseId, tripId, userId, amount, category, note, date, type });
+        res.status(201).json({ id: expenseId, tripId, userId, amount, category, note, date, type, currency: expenseCurrency, exchangeRate: rate });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to add expense' });

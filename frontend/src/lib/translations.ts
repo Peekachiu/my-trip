@@ -38,7 +38,8 @@ export const translations = {
         dashboard: {
             myTrips: 'My Trips',
             noTrips: 'No trips assigned yet.',
-            contactAdmin: 'Contact your admin to get started!',
+            contactAdmin: 'Contact your administrator to get assigned to a trip.',
+            currencyConverter: 'Currency Converter',
             users: 'Users',
             allTrips: 'All Trips',
             createUser: 'Create User',
@@ -92,6 +93,13 @@ export const translations = {
                 stay: 'Stay',
                 activity: 'Activity',
                 other: 'Other'
+            },
+            status: {
+                upcoming: 'Upcoming',
+                ongoing: 'Ongoing',
+                completed: 'Completed',
+                daysLeft: 'days to go',
+                today: 'Starting today!'
             }
         }
     },
@@ -132,7 +140,8 @@ export const translations = {
         dashboard: {
             myTrips: '我的旅程',
             noTrips: '暂无分配的旅程。',
-            contactAdmin: '请联系管理员开始使用！',
+            contactAdmin: '请联系管理员为您分配行程。',
+            currencyConverter: '汇率转换器',
             users: '用户',
             allTrips: '所有旅程',
             createUser: '创建用户',
@@ -186,6 +195,13 @@ export const translations = {
                 stay: '住宿',
                 activity: '活动',
                 other: '其他'
+            },
+            status: {
+                upcoming: '即将开始',
+                ongoing: '进行中',
+                completed: '已结束',
+                daysLeft: '天后出发',
+                today: '今天出发！'
             }
         }
     },
@@ -280,6 +296,13 @@ export const translations = {
                 stay: 'Penginapan',
                 activity: 'Aktiviti',
                 other: 'Lain-lain'
+            },
+            status: {
+                upcoming: 'Akan Datang',
+                ongoing: 'Sedang Berlangsung',
+                completed: 'Selesai',
+                daysLeft: 'hari lagi',
+                today: 'Bermula hari ini!'
             }
         }
     },
@@ -374,6 +397,13 @@ export const translations = {
                 stay: '宿泊',
                 activity: 'アクティビティ',
                 other: 'その他'
+            },
+            status: {
+                upcoming: '予定',
+                ongoing: '旅行中',
+                completed: '完了',
+                daysLeft: '日後',
+                today: '今日から開始！'
             }
         }
     },
@@ -468,6 +498,13 @@ export const translations = {
                 stay: 'Alojamiento',
                 activity: 'Actividad',
                 other: 'Otro'
+            },
+            status: {
+                upcoming: 'Próximo',
+                ongoing: 'En Curso',
+                completed: 'Completado',
+                daysLeft: 'días faltan',
+                today: '¡Empieza hoy!'
             }
         }
     }

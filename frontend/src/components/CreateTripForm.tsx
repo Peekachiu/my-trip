@@ -10,6 +10,7 @@ type TripData = {
     startDate: string;
     endDate: string;
     budget: number;
+    baseCurrency?: string;
     assignedToIds: string[];
     itinerary: { day: number, time: string, title: string, description: string, url: string, date?: string, duration?: number }[];
 };
@@ -29,6 +30,7 @@ export default function CreateTripForm({ onSuccess, initialData, tripId, onCance
         startDate: '',
         endDate: '',
         budget: 0,
+        baseCurrency: 'USD',
         assignedToIds: [] as string[]
     });
     // Ensure date is always a string for state
@@ -44,6 +46,7 @@ export default function CreateTripForm({ onSuccess, initialData, tripId, onCance
                 startDate: initialData.startDate?.split('T')[0] || '',
                 endDate: initialData.endDate?.split('T')[0] || '',
                 budget: initialData.budget,
+                baseCurrency: initialData.baseCurrency || 'USD',
                 assignedToIds: initialData.assignedToIds || []
             });
             if (initialData.itinerary && initialData.itinerary.length > 0) {
@@ -128,6 +131,17 @@ export default function CreateTripForm({ onSuccess, initialData, tripId, onCance
                     value={formData.budget}
                     onChange={e => setFormData({ ...formData, budget: parseInt(e.target.value) })}
                 />
+
+                <label className="block text-sm font-medium text-gray-700">Trip Base Currency</label>
+                <select
+                    className="w-full rounded-md border border-gray-200 p-2 focus:border-brand-magenta focus:ring-brand-magenta text-gray-900"
+                    value={formData.baseCurrency}
+                    onChange={e => setFormData({ ...formData, baseCurrency: e.target.value })}
+                >
+                    {['USD', 'EUR', 'GBP', 'JPY', 'MYR', 'SGD', 'CNY', 'AUD', 'CAD', 'KRW'].map(c => (
+                        <option key={c} value={c}>{c}</option>
+                    ))}
+                </select>
 
                 <label className="block text-sm font-medium text-gray-700">Assign to Users</label>
                 <div className="border border-gray-200 rounded-md p-3 max-h-40 overflow-y-auto bg-white/50 space-y-2">
