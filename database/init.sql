@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS itinerary_items (
   trip_id VARCHAR(36),
   day INT,
   time VARCHAR(10),
+  duration INT,
   date DATE,
   title VARCHAR(255),
   description TEXT,

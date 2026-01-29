@@ -102,8 +102,8 @@ export const createTrip = async (req: Request, res: Response) => {
         if (itinerary && itinerary.length > 0) {
             for (const item of itinerary) {
                 await connection.execute(
-                    'INSERT INTO itinerary_items (id, trip_id, day, time, date, title, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                    [generateId(), tripId, item.day, item.time, item.date || null, item.title, item.description || null, item.url || null]
+                    'INSERT INTO itinerary_items (id, trip_id, day, time, duration, date, title, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    [generateId(), tripId, item.day, item.time, item.duration || null, item.date ? item.date.split('T')[0] : null, item.title, item.description || null, item.url || null]
                 );
             }
         }
@@ -142,8 +142,8 @@ export const updateTrip = async (req: Request, res: Response) => {
         if (itinerary && itinerary.length > 0) {
             for (const item of itinerary) {
                 await connection.execute(
-                    'INSERT INTO itinerary_items (id, trip_id, day, time, date, title, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                    [generateId(), tripId, item.day, item.time, item.date || null, item.title, item.description || null, item.url || null]
+                    'INSERT INTO itinerary_items (id, trip_id, day, time, duration, date, title, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    [generateId(), tripId, item.day, item.time, item.duration || null, item.date ? item.date.split('T')[0] : null, item.title, item.description || null, item.url || null]
                 );
             }
         }

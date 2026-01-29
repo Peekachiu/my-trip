@@ -11,7 +11,7 @@ type TripData = {
     endDate: string;
     budget: number;
     assignedToIds: string[];
-    itinerary: { day: number, time: string, title: string, description: string, url: string, date?: string }[];
+    itinerary: { day: number, time: string, title: string, description: string, url: string, date?: string, duration?: number }[];
 };
 
 interface CreateTripFormProps {
@@ -32,7 +32,7 @@ export default function CreateTripForm({ onSuccess, initialData, tripId, onCance
         assignedToIds: [] as string[]
     });
     // Ensure date is always a string for state
-    const [itinerary, setItinerary] = useState<{ day: number; time: string; title: string; description: string; url: string; date: string; }[]>([{ day: 1, time: '09:00', title: '', description: '', url: '', date: '' }]);
+    const [itinerary, setItinerary] = useState<{ day: number; time: string; title: string; description: string; url: string; date: string; duration: number; }[]>([{ day: 1, time: '09:00', title: '', description: '', url: '', date: '', duration: 0 }]);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -54,7 +54,8 @@ export default function CreateTripForm({ onSuccess, initialData, tripId, onCance
                     title: i.title,
                     description: i.description || '',
                     url: i.url || '',
-                    date: i.date || ''
+                    date: i.date || '',
+                    duration: i.duration || 0
                 })));
             }
         }
@@ -85,7 +86,7 @@ export default function CreateTripForm({ onSuccess, initialData, tripId, onCance
     };
 
     const addItineraryItem = () => {
-        setItinerary([...itinerary, { day: 1, time: '09:00', title: '', description: '', url: '', date: '' }]);
+        setItinerary([...itinerary, { day: 1, time: '09:00', title: '', description: '', url: '', date: '', duration: 0 }]);
     };
 
     return (
@@ -175,11 +176,34 @@ export default function CreateTripForm({ onSuccess, initialData, tripId, onCance
                                         const newIt = [...itinerary]; newIt[index].date = e.target.value; setItinerary(newIt);
                                     }} />
                                 </div>
-                                <div className="col-span-12 sm:col-span-3">
+                                <div className="col-span-6 sm:col-span-3">
                                     <label className="text-[10px] uppercase text-gray-500 font-bold block mb-1">Time</label>
                                     <input type="time" className="w-full rounded-md border border-gray-200 p-2 text-sm text-gray-900" value={item.time} onChange={e => {
                                         const newIt = [...itinerary]; newIt[index].time = e.target.value; setItinerary(newIt);
                                     }} />
+                                </div>
+                                <div className="col-span-6 sm:col-span-3">
+                                    <label className="text-[10px] uppercase text-gray-500 font-bold block mb-1">Duration</label>
+                                    <div className="flex gap-1">
+                                        <input type="number" placeholder="H" min="0" className="w-1/2 rounded-md border border-gray-200 p-2 text-sm text-gray-900"
+                                            value={Math.floor((item.duration || 0) / 60) || ''}
+                                            onChange={e => {
+                                                const hours = parseInt(e.target.value) || 0;
+                                                const minutes = (item.duration || 0) % 60;
+                                                const newIt = [...itinerary];
+                                                newIt[index].duration = (hours * 60) + minutes;
+                                                setItinerary(newIt);
+                                            }} />
+                                        <input type="number" placeholder="M" min="0" max="59" className="w-1/2 rounded-md border border-gray-200 p-2 text-sm text-gray-900"
+                                            value={((item.duration || 0) % 60) || ''}
+                                            onChange={e => {
+                                                const minutes = parseInt(e.target.value) || 0;
+                                                const hours = Math.floor((item.duration || 0) / 60);
+                                                const newIt = [...itinerary];
+                                                newIt[index].duration = (hours * 60) + minutes;
+                                                setItinerary(newIt);
+                                            }} />
+                                    </div>
                                 </div>
 
                                 <div className="col-span-12">

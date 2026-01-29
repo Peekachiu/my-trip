@@ -8,7 +8,7 @@ import Link from 'next/link';
 import CreateTripForm from '@/components/CreateTripForm';
 
 type Expense = { id: string; amount: number; category: string; note: string; date: string; type: 'group' | 'individual'; userId: string; };
-type ItineraryItem = { id: string; day: number; time: string; title: string; description: string; url: string; date?: string; };
+type ItineraryItem = { id: string; day: number; time: string; title: string; description: string; url: string; date?: string; duration?: number; };
 type Trip = {
     id: string;
     title: string;
@@ -23,6 +23,21 @@ type Trip = {
     budgetLogs?: { id: string; amount: number; date: string; }[];
 };
 
+const formatTime = (time: string, durationMinutes: number = 0) => {
+    if (!time) return '';
+    const [h, m] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(h, m, 0, 0);
+    const startTime = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+    if (durationMinutes > 0) {
+        date.setMinutes(date.getMinutes() + durationMinutes);
+        const endTime = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        return `${startTime} - ${endTime}`;
+    }
+    return startTime;
+};
+
 export default function TripDetailsPage() {
     const { id } = useParams();
     const { user } = useAuth();
@@ -34,6 +49,8 @@ export default function TripDetailsPage() {
     const [expenseForm, setExpenseForm] = useState({ amount: '', category: 'Food', note: '', date: '' });
     const [personalBudgetLimit, setPersonalBudgetLimit] = useState<number>(0);
     const [isEditingPersonalBudget, setIsEditingPersonalBudget] = useState(false);
+    const [isAddingGroupExpense, setIsAddingGroupExpense] = useState(false);
+    const [isAddingPersonalExpense, setIsAddingPersonalExpense] = useState(false);
 
     useEffect(() => {
         if (id && user) refreshData();
@@ -59,7 +76,10 @@ export default function TripDetailsPage() {
             type,
             userId: user.id
         });
+
         setExpenseForm({ amount: '', category: 'Food', note: '', date: '' });
+        setIsAddingGroupExpense(false);
+        setIsAddingPersonalExpense(false);
         refreshData();
     };
 
@@ -259,7 +279,7 @@ export default function TripDetailsPage() {
 
                                     <div className="flex flex-wrap items-center gap-3 mt-auto">
                                         <span className="text-xs font-bold text-brand-magenta bg-brand-pink/10 px-2.5 py-1 rounded-full flex items-center gap-1">
-                                            ⏰ {item.time}
+                                            ⏰ {formatTime(item.time, item.duration)}
                                         </span>
                                         {item.url && (
                                             <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-white bg-brand-cyan px-3 py-1 rounded-full hover:bg-brand-cyan/80 transition-colors flex items-center gap-1 shadow-sm">
@@ -338,18 +358,30 @@ export default function TripDetailsPage() {
                         )}
 
                         {user.role === 'admin' && (
-                            <form onSubmit={(e) => handleAddExpense(e, 'group')} className="glass-card bg-white/80 p-4 border-gray-100 mb-6">
-                                <h4 className="text-sm font-bold text-brand-magenta mb-2">+ Add Group Expense</h4>
-                                <div className="grid grid-cols-2 gap-2 mb-2">
-                                    <input type="number" placeholder="Amount" className="p-2 bg-gray-50 rounded-lg text-gray-900 placeholder-gray-500 border border-transparent focus:bg-white focus:border-brand-magenta" value={expenseForm.amount} onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value })} required />
-                                    <select className="p-2 bg-gray-50 rounded-lg text-gray-900 border border-transparent focus:bg-white focus:border-brand-magenta" value={expenseForm.category} onChange={e => setExpenseForm({ ...expenseForm, category: e.target.value })}>
-                                        <option>Food</option><option>Transport</option><option>Stay</option><option>Activity</option><option>Other</option>
-                                    </select>
-                                </div>
-                                <input type="date" className="w-full p-2 bg-gray-50 rounded-lg text-gray-900 border border-transparent focus:bg-white focus:border-brand-magenta mb-2" value={expenseForm.date} onChange={e => setExpenseForm({ ...expenseForm, date: e.target.value })} />
-                                <input type="text" placeholder="Note" className="w-full p-2 bg-gray-50 rounded-lg text-gray-900 placeholder-gray-500 border border-transparent focus:bg-white focus:border-brand-magenta mb-2" value={expenseForm.note} onChange={e => setExpenseForm({ ...expenseForm, note: e.target.value })} required />
-                                <button className="w-full bg-brand-cyan text-white font-bold py-2 rounded-lg hover:opacity-90 transition-opacity">Add to Group</button>
-                            </form>
+                            !isAddingGroupExpense ? (
+                                <button
+                                    onClick={() => setIsAddingGroupExpense(true)}
+                                    className="w-full py-3 mb-6 flex items-center justify-center gap-2 bg-white/50 border border-brand-cyan/30 text-brand-cyan font-bold rounded-xl hover:bg-brand-cyan hover:text-white transition-all shadow-sm"
+                                >
+                                    <span>+ Add Group Expense</span>
+                                </button>
+                            ) : (
+                                <form onSubmit={(e) => handleAddExpense(e, 'group')} className="glass-card bg-white/80 p-4 border-gray-100 mb-6 animate-fadeIn">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h4 className="text-sm font-bold text-brand-magenta">New Group Expense</h4>
+                                        <button type="button" onClick={() => setIsAddingGroupExpense(false)} className="text-xs font-bold text-gray-400 hover:text-gray-600">Cancel</button>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 mb-2">
+                                        <input type="number" placeholder="Amount" className="p-2 bg-gray-50 rounded-lg text-gray-900 placeholder-gray-500 border border-transparent focus:bg-white focus:border-brand-magenta" value={expenseForm.amount} onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value })} required />
+                                        <select className="p-2 bg-gray-50 rounded-lg text-gray-900 border border-transparent focus:bg-white focus:border-brand-magenta" value={expenseForm.category} onChange={e => setExpenseForm({ ...expenseForm, category: e.target.value })}>
+                                            <option>Food</option><option>Transport</option><option>Stay</option><option>Activity</option><option>Other</option>
+                                        </select>
+                                    </div>
+                                    <input type="date" className="w-full p-2 bg-gray-50 rounded-lg text-gray-900 border border-transparent focus:bg-white focus:border-brand-magenta mb-2" value={expenseForm.date} onChange={e => setExpenseForm({ ...expenseForm, date: e.target.value })} />
+                                    <input type="text" placeholder="Note" className="w-full p-2 bg-gray-50 rounded-lg text-gray-900 placeholder-gray-500 border border-transparent focus:bg-white focus:border-brand-magenta mb-2" value={expenseForm.note} onChange={e => setExpenseForm({ ...expenseForm, note: e.target.value })} required />
+                                    <button className="w-full bg-brand-cyan text-white font-bold py-2 rounded-lg hover:opacity-90 transition-opacity">Add to Group</button>
+                                </form>
+                            )
                         )}
 
                         <div className="space-y-3">
@@ -392,18 +424,30 @@ export default function TripDetailsPage() {
                             )}
                         </div>
 
-                        <form onSubmit={(e) => handleAddExpense(e, 'individual')} className="glass-card bg-white/80 p-4 border-gray-100 mb-6">
-                            <h4 className="text-sm font-bold text-brand-pink mb-2">+ Add Personal Expense</h4>
-                            <div className="grid grid-cols-2 gap-2 mb-2">
-                                <input type="number" placeholder="Amount" className="p-2 bg-gray-50 rounded-lg text-gray-900 placeholder-gray-500 border border-transparent focus:bg-white focus:border-brand-pink" value={expenseForm.amount} onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value })} required />
-                                <select className="p-2 bg-gray-50 rounded-lg text-gray-900 border border-transparent focus:bg-white focus:border-brand-pink" value={expenseForm.category} onChange={e => setExpenseForm({ ...expenseForm, category: e.target.value })}>
-                                    <option>Food</option><option>Transport</option><option>Stay</option><option>Activity</option><option>Other</option>
-                                </select>
-                            </div>
-                            <input type="date" className="w-full p-2 bg-gray-50 rounded-lg text-gray-900 border border-transparent focus:bg-white focus:border-brand-pink mb-2" value={expenseForm.date} onChange={e => setExpenseForm({ ...expenseForm, date: e.target.value })} />
-                            <input type="text" placeholder="Note" className="w-full p-2 bg-gray-50 rounded-lg text-gray-900 placeholder-gray-500 border border-transparent focus:bg-white focus:border-brand-pink mb-2" value={expenseForm.note} onChange={e => setExpenseForm({ ...expenseForm, note: e.target.value })} required />
-                            <button className="w-full bg-brand-pink text-white font-bold py-2 rounded-lg hover:opacity-90 transition-opacity">Add to Personal</button>
-                        </form>
+                        {!isAddingPersonalExpense ? (
+                            <button
+                                onClick={() => setIsAddingPersonalExpense(true)}
+                                className="w-full py-3 mb-6 flex items-center justify-center gap-2 bg-white/50 border border-brand-pink/30 text-brand-pink font-bold rounded-xl hover:bg-brand-pink hover:text-white transition-all shadow-sm"
+                            >
+                                <span>+ Add Personal Expense</span>
+                            </button>
+                        ) : (
+                            <form onSubmit={(e) => handleAddExpense(e, 'individual')} className="glass-card bg-white/80 p-4 border-gray-100 mb-6 animate-fadeIn">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h4 className="text-sm font-bold text-brand-pink">New Personal Expense</h4>
+                                    <button type="button" onClick={() => setIsAddingPersonalExpense(false)} className="text-xs font-bold text-gray-400 hover:text-gray-600">Cancel</button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 mb-2">
+                                    <input type="number" placeholder="Amount" className="p-2 bg-gray-50 rounded-lg text-gray-900 placeholder-gray-500 border border-transparent focus:bg-white focus:border-brand-pink" value={expenseForm.amount} onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value })} required />
+                                    <select className="p-2 bg-gray-50 rounded-lg text-gray-900 border border-transparent focus:bg-white focus:border-brand-pink" value={expenseForm.category} onChange={e => setExpenseForm({ ...expenseForm, category: e.target.value })}>
+                                        <option>Food</option><option>Transport</option><option>Stay</option><option>Activity</option><option>Other</option>
+                                    </select>
+                                </div>
+                                <input type="date" className="w-full p-2 bg-gray-50 rounded-lg text-gray-900 border border-transparent focus:bg-white focus:border-brand-pink mb-2" value={expenseForm.date} onChange={e => setExpenseForm({ ...expenseForm, date: e.target.value })} />
+                                <input type="text" placeholder="Note" className="w-full p-2 bg-gray-50 rounded-lg text-gray-900 placeholder-gray-500 border border-transparent focus:bg-white focus:border-brand-pink mb-2" value={expenseForm.note} onChange={e => setExpenseForm({ ...expenseForm, note: e.target.value })} required />
+                                <button className="w-full bg-brand-pink text-white font-bold py-2 rounded-lg hover:opacity-90 transition-opacity">Add to Personal</button>
+                            </form>
+                        )}
 
                         <div className="space-y-3">
                             {myExpenses.length === 0 && <p className="text-gray-400 text-center">No personal expenses yet.</p>}

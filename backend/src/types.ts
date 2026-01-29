@@ -27,6 +27,7 @@ export interface ItineraryItem {
     day: number;
     time: string;
     date?: string; // Optional for implementation ease, but effectively required
+    duration?: number;
     title: string;
     description?: string;
     url?: string;
