@@ -3,9 +3,11 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
+import { useLanguage } from '@/lib/language';
 
 export default function Header() {
     const { user, logout } = useAuth();
+    const { t } = useLanguage();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -22,7 +24,7 @@ export default function Header() {
     }, []);
 
     return (
-        <header className="fixed top-0 left-0 w-full z-[100] glass !bg-white/80 px-6 py-3 flex justify-between items-center transition-all duration-300">
+        <header className="fixed top-0 left-0 w-full z-[100] glass !bg-white/80 dark:!bg-black/80 dark:border-b dark:border-white/10 px-6 py-3 flex justify-between items-center transition-all duration-300">
             <Link href={user ? (user.role === 'admin' ? '/admin' : '/dashboard') : '/'} className="flex items-center gap-2 group">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-cyan to-brand-magenta flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:rotate-12 transition-transform">
                     P
@@ -39,7 +41,7 @@ export default function Header() {
                         className="flex items-center gap-3 hover:bg-white/20 p-2 rounded-full transition-all"
                     >
                         <div className="hidden sm:flex flex-col items-end">
-                            <span className="text-sm font-bold text-gray-700">{user.username}</span>
+                            <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{user.username}</span>
                             <span className="text-[10px] uppercase font-bold text-brand-magenta tracking-wider bg-brand-pink/10 px-1.5 rounded-full">
                                 {user.role}
                             </span>
@@ -50,21 +52,25 @@ export default function Header() {
                     </button>
 
                     {isDropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-56 bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-white/50 overflow-hidden animate-fadeIn z-[101]">
+                        <div className="absolute right-0 mt-2 w-56 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-xl shadow-2xl border border-white/50 dark:border-gray-700 overflow-hidden animate-fadeIn z-[101]">
                             <div className="p-2 space-y-1">
-                                <button className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-brand-cyan/10 hover:text-brand-cyan rounded-lg transition-colors flex items-center gap-2">
-                                    🔔 Notification
+                                <button className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-brand-cyan/10 hover:text-brand-cyan rounded-lg transition-colors flex items-center gap-2">
+                                    🔔 {t('nav.notification')}
                                 </button>
-                                <button className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-brand-cyan/10 hover:text-brand-cyan rounded-lg transition-colors flex items-center gap-2">
-                                    ⚙️ Settings
-                                </button>
+                                <Link
+                                    href="/settings"
+                                    onClick={() => setIsDropdownOpen(false)}
+                                    className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-brand-cyan/10 hover:text-brand-cyan rounded-lg transition-colors flex items-center gap-2"
+                                >
+                                    ⚙️ {t('nav.settings')}
+                                </Link>
                             </div>
                             <div className="border-t border-gray-100 p-2">
                                 <button
                                     onClick={logout}
                                     className="w-full text-left px-4 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
                                 >
-                                    🚪 Logout
+                                    🚪 {t('nav.logout')}
                                 </button>
                             </div>
                         </div>

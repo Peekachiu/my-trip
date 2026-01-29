@@ -1,8 +1,20 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Default Colors */
+  --color-brand-cyan: #00B5BD;
+  --color-brand-light-cyan: #B0FFFA;
+  --color-brand-magenta: #FF0087;
+  --color-brand-pink: #FF7DB0;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 @theme {
@@ -11,25 +23,23 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  --color-brand-cyan: #00B5BD;
-  --color-brand-light-cyan: #B0FFFA;
-  --color-brand-magenta: #FF0087;
-  --color-brand-pink: #FF7DB0;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-brand-cyan: var(--color-brand-cyan);
+  --color-brand-light-cyan: var(--color-brand-light-cyan);
+  --color-brand-magenta: var(--color-brand-magenta);
+  --color-brand-pink: var(--color-brand-pink);
 }
 
 body {
-  background: linear-gradient(135deg, #a0d8ef 0%, #ffc1e3 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-brand-cyan), white 70%) 0%, color-mix(in srgb, var(--color-brand-magenta), white 80%) 100%);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+.dark body {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-brand-cyan), black 80%) 0%, color-mix(in srgb, var(--color-brand-magenta), black 90%) 100%);
 }
 
 @utility glass {
@@ -38,6 +48,11 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+.dark .glass {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @utility glass-card {
@@ -57,6 +72,38 @@ body {
   }
 }
 
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .animate-fadeIn {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out forwards;
 }

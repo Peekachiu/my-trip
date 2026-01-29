@@ -62,3 +62,56 @@ export const deleteUser = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to delete user' });
     }
 };
+
+export const updateUser = async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    const { username, email, password } = req.body;
+
+    try {
+        const connection = await pool.getConnection();
+        try {
+            await connection.beginTransaction();
+
+            // Build dynamic update query
+            const updates = [];
+            const values = [];
+
+            if (username !== undefined) {
+                updates.push('username = ?');
+                values.push(username);
+            }
+            if (email !== undefined) {
+                updates.push('email = ?');
+                values.push(email);
+            }
+            if (password !== undefined && password !== '') {
+                updates.push('password = ?');
+                values.push(password);
+            }
+
+            if (updates.length === 0) {
+                connection.release();
+                return res.status(400).json({ error: 'No fields to update' });
+            }
+
+            values.push(userId);
+            const query = `UPDATE users SET ${updates.join(', ')} WHERE id = ?`;
+
+            await connection.execute(query, values);
+            await connection.commit();
+
+            // Fetch updated user to return
+            const [rows]: any = await connection.execute('SELECT id, username, email, role FROM users WHERE id = ?', [userId]);
+            res.json(rows[0]);
+
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update user' });
+    }
+};
