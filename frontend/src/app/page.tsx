@@ -21,7 +21,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md rounded-xl bg-white/80 backdrop-blur-md p-8 shadow-xl border border-white/50">
         <h1 className="mb-6 text-center text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-magenta to-brand-cyan">
-          My Trip
+          peeKaTrip
         </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

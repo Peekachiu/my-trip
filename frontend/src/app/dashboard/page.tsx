@@ -21,18 +21,10 @@ export default function UserDashboard() {
 
     return (
         <div className="p-4 min-h-screen">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 mt-6">
                 <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-magenta">
                     My Trips
                 </h1>
-                <div className="flex items-center gap-3">
-                    <button onClick={logout} className="text-sm text-gray-500 hover:text-brand-magenta transition-colors">
-                        Logout
-                    </button>
-                    <div className="h-8 w-8 rounded-full bg-brand-cyan/20 flex items-center justify-center text-brand-cyan font-bold border border-brand-cyan">
-                        {user.username.charAt(0).toUpperCase()}
-                    </div>
-                </div>
             </div>
 
             <div className="grid gap-4">

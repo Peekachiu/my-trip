@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const tripController_1 = require("../controllers/tripController");
+const router = (0, express_1.Router)();
+router.get('/', tripController_1.getAllTrips);
+router.get('/:id', tripController_1.getTripById);
+router.get('/user/:userId', tripController_1.getTripsForUser);
+router.post('/', tripController_1.createTrip);
+router.put('/:id', tripController_1.updateTrip);
+router.post('/:id/expenses', tripController_1.addExpense);
+router.patch('/:id/personal-budget', tripController_1.updatePersonalBudget);
+router.patch('/:id/group-budget', tripController_1.updateGroupBudget);
+exports.default = router;

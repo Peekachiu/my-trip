@@ -103,7 +103,7 @@ export default function TripDetailsPage() {
         <div className="min-h-screen bg-transparent pb-20 relative">
             {isEditingTrip && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-md p-4 animate-fadeIn">
-                    <div className="w-full max-w-lg">
+                    <div className="w-full max-w-2xl">
                         <CreateTripForm
                             tripId={trip.id}
                             initialData={trip}
@@ -205,11 +205,11 @@ export default function TripDetailsPage() {
                             <div className="flex justify-between">
                                 <div>
                                     <span className="block text-xs text-gray-400">Start</span>
-                                    <span className="text-lg font-bold text-brand-magenta">{trip.startDate}</span>
+                                    <span className="text-lg font-bold text-brand-magenta">{new Date(trip.startDate).toLocaleDateString()}</span>
                                 </div>
                                 <div className="text-right">
                                     <span className="block text-xs text-gray-400">End</span>
-                                    <span className="text-lg font-bold text-brand-cyan">{trip.endDate}</span>
+                                    <span className="text-lg font-bold text-brand-cyan">{new Date(trip.endDate).toLocaleDateString()}</span>
                                 </div>
                             </div>
                         </div>
@@ -244,13 +244,13 @@ export default function TripDetailsPage() {
                                     <div className="text-xs font-bold text-gray-400 uppercase">Day</div>
                                     <div className="text-2xl font-bold text-brand-cyan">{item.day}</div>
                                 </div>
-                                <div className="flex-grow glass-card p-4 border-l-4 border-brand-magenta">
+                                <div className="flex-grow min-w-0 glass-card p-4 border-l-4 border-brand-magenta">
                                     {item.date && (
                                         <span className="text-xs font-bold text-brand-pink uppercase tracking-wider mb-1 block">
                                             {new Date(item.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                                         </span>
                                     )}
-                                    <p className="font-bold text-gray-800">{item.activity}</p>
+                                    <p className="font-bold text-gray-800 break-words">{item.activity}</p>
                                     <p className="text-sm text-gray-500 mt-1">⏰ {item.time}</p>
                                 </div>
                             </div>

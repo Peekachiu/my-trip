@@ -154,23 +154,23 @@ export default function CreateTripForm({ onSuccess, initialData, tripId, onCance
                 <div className="mt-6 border-t border-dashed border-gray-300 pt-4">
                     <h4 className="font-bold text-brand-magenta mb-2">Itinerary</h4>
                     {itinerary.map((item, index) => (
-                        <div key={index} className="flex gap-2 mt-2 flex-wrap sm:flex-nowrap">
-                            <input type="number" className="w-16 rounded-md border border-gray-200 p-1 text-gray-900" placeholder="Day" value={item.day} onChange={e => {
+                        <div key={index} className="grid grid-cols-12 gap-2 mt-2 items-center bg-gray-50 p-2 rounded-md sm:bg-transparent sm:p-0 border border-gray-100 sm:border-none">
+                            <input type="number" className="col-span-2 sm:col-span-1 rounded-md border border-gray-200 p-2 text-sm text-gray-900 text-center" placeholder="#" value={item.day} onChange={e => {
                                 const newIt = [...itinerary]; newIt[index].day = parseInt(e.target.value); setItinerary(newIt);
                             }} />
-                            <input type="date" className="rounded-md border border-gray-200 p-1 text-gray-900" value={item.date || ''} onChange={e => {
+                            <input type="date" className="col-span-6 sm:col-span-3 rounded-md border border-gray-200 p-2 text-sm text-gray-900" value={item.date || ''} onChange={e => {
                                 const newIt = [...itinerary]; newIt[index].date = e.target.value; setItinerary(newIt);
                             }} />
-                            <input type="time" className="rounded-md border border-gray-200 p-1 text-gray-900" value={item.time} onChange={e => {
+                            <input type="time" className="col-span-4 sm:col-span-2 rounded-md border border-gray-200 p-2 text-sm text-gray-900" value={item.time} onChange={e => {
                                 const newIt = [...itinerary]; newIt[index].time = e.target.value; setItinerary(newIt);
                             }} />
-                            <input className="flex-1 rounded-md border border-gray-200 p-1 text-gray-900 placeholder-gray-500 min-w-[150px]" placeholder="Activity" value={item.activity} onChange={e => {
+                            <input className="col-span-10 sm:col-span-5 rounded-md border border-gray-200 p-2 text-sm text-gray-900 placeholder-gray-500" placeholder="Activity" value={item.activity} onChange={e => {
                                 const newIt = [...itinerary]; newIt[index].activity = e.target.value; setItinerary(newIt);
                             }} />
                             <button type="button" onClick={() => {
                                 const newIt = itinerary.filter((_, i) => i !== index);
                                 setItinerary(newIt);
-                            }} className="text-red-500 font-bold px-2">×</button>
+                            }} className="col-span-2 sm:col-span-1 text-red-500 font-bold hover:bg-red-50 rounded h-full flex items-center justify-center text-lg">×</button>
                         </div>
                     ))}
                     <button type="button" onClick={addItineraryItem} className="mt-4 text-sm text-brand-cyan font-bold hover:underline">

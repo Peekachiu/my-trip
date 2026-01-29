@@ -43,17 +43,7 @@ export default function AdminDashboard() {
 
     return (
         <div className="p-4 min-h-screen">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-magenta to-brand-cyan">Admin Dashboard</h1>
-                <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-500 font-medium hidden sm:inline">Logged in as {user.username}</span>
-                    <button onClick={logout} className="text-sm text-brand-magenta hover:underline font-bold">
-                        Logout
-                    </button>
-                </div>
-            </div>
-
-            <section className="mb-8">
+            <section className="mb-8 mt-6">
                 <div className="flex justify-between items-center mb-2">
                     <h2 className="text-xl font-semibold text-gray-800">Users</h2>
                     <button onClick={() => setShowCreateUser(!showCreateUser)} className="text-sm bg-brand-cyan text-white font-bold px-4 py-1 rounded-full shadow hover:bg-brand-cyan/80 transition-colors">

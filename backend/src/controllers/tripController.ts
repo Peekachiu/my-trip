@@ -57,6 +57,10 @@ export const getTripById = async (req: Request, res: Response) => {
         trip.assignments = assignments;
         trip.assignedToIds = assignedUsers.map((u: any) => u.user_id);
 
+        // Map snake_case DB columns to camelCase for frontend
+        trip.startDate = trip.start_date;
+        trip.endDate = trip.end_date;
+
         res.json(trip);
     } catch (error) {
         console.error(error);
@@ -115,7 +119,7 @@ export const createTrip = async (req: Request, res: Response) => {
 
 export const updateTrip = async (req: Request, res: Response) => {
     const tripId = req.params.id;
-    const { title, destination, startDate, endDate, budget, itinerary } = req.body;
+    const { title, destination, startDate, endDate, budget, itinerary, assignedToIds } = req.body;
 
     const start = startDate === '' ? null : startDate;
     const end = endDate === '' ? null : endDate;
@@ -138,6 +142,37 @@ export const updateTrip = async (req: Request, res: Response) => {
                 await connection.execute(
                     'INSERT INTO itinerary_items (id, trip_id, day, time, date, activity) VALUES (?, ?, ?, ?, ?, ?)',
                     [generateId(), tripId, item.day, item.time, item.date || null, item.activity]
+                );
+            }
+        }
+
+        // 3. Update Assignments
+        if (assignedToIds) {
+            // Get current assignments
+            const [currentAssignments]: any = await connection.execute('SELECT user_id FROM trip_assignments WHERE trip_id = ?', [tripId]);
+            const currentIds: string[] = currentAssignments.map((a: any) => a.user_id);
+            const newIds = assignedToIds as string[];
+
+            // Determine additions and removals
+            const toAdd = newIds.filter(id => !currentIds.includes(id));
+            const toRemove = currentIds.filter(id => !newIds.includes(id));
+
+            // Add new users with 0 budget
+            for (const userId of toAdd) {
+                await connection.execute(
+                    'INSERT INTO trip_assignments (trip_id, user_id, personal_budget) VALUES (?, ?, ?)',
+                    [tripId, userId, 0]
+                );
+            }
+
+            // Remove users (and their personal budget)
+            if (toRemove.length > 0) {
+                // Using IN clause for deletion
+                // Construct placeholders based on length
+                const placeholders = toRemove.map(() => '?').join(',');
+                await connection.execute(
+                    `DELETE FROM trip_assignments WHERE trip_id = ? AND user_id IN (${placeholders})`,
+                    [tripId, ...toRemove]
                 );
             }
         }
