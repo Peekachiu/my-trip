@@ -8,7 +8,7 @@ import Link from 'next/link';
 import CreateTripForm from '@/components/CreateTripForm';
 
 type Expense = { id: string; amount: number; category: string; note: string; date: string; type: 'group' | 'individual'; userId: string; };
-type ItineraryItem = { id: string; day: number; time: string; activity: string; date?: string; };
+type ItineraryItem = { id: string; day: number; time: string; title: string; description: string; url: string; date?: string; };
 type Trip = {
     id: string;
     title: string;
@@ -20,6 +20,7 @@ type Trip = {
     expenses: Expense[];
     assignments: { user_id: string; personal_budget: number; username: string }[];
     assignedToIds: string[];
+    budgetLogs?: { id: string; amount: number; date: string; }[];
 };
 
 export default function TripDetailsPage() {
@@ -244,14 +245,28 @@ export default function TripDetailsPage() {
                                     <div className="text-xs font-bold text-gray-400 uppercase">Day</div>
                                     <div className="text-2xl font-bold text-brand-cyan">{item.day}</div>
                                 </div>
-                                <div className="flex-grow min-w-0 glass-card p-4 border-l-4 border-brand-magenta">
+                                <div className="flex-grow min-w-0 glass-card p-4 border-l-4 border-brand-magenta relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                                        <div className="w-16 h-16 rounded-full bg-brand-magenta blur-xl"></div>
+                                    </div>
                                     {item.date && (
-                                        <span className="text-xs font-bold text-brand-pink uppercase tracking-wider mb-1 block">
+                                        <span className="text-xs font-bold text-brand-pink uppercase tracking-wider mb-2 block border-b border-gray-100 pb-1">
                                             {new Date(item.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                                         </span>
                                     )}
-                                    <p className="font-bold text-gray-800 break-words">{item.activity}</p>
-                                    <p className="text-sm text-gray-500 mt-1">⏰ {item.time}</p>
+                                    <h4 className="font-bold text-lg text-gray-800 break-words mb-1">{item.title}</h4>
+                                    {item.description && <p className="text-sm text-gray-600 mb-3 break-words whitespace-pre-wrap leading-relaxed">{item.description}</p>}
+
+                                    <div className="flex flex-wrap items-center gap-3 mt-auto">
+                                        <span className="text-xs font-bold text-brand-magenta bg-brand-pink/10 px-2.5 py-1 rounded-full flex items-center gap-1">
+                                            ⏰ {item.time}
+                                        </span>
+                                        {item.url && (
+                                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-white bg-brand-cyan px-3 py-1 rounded-full hover:bg-brand-cyan/80 transition-colors flex items-center gap-1 shadow-sm">
+                                                <span>📍 Location</span>
+                                            </a>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -295,6 +310,30 @@ export default function TripDetailsPage() {
                                         <button className="flex-1 py-2 bg-brand-cyan text-white font-bold rounded-lg hover:opacity-90 shadow-md">Confirm</button>
                                     </div>
                                 </form>
+                            </div>
+                        )}
+
+                        {trip.budgetLogs && trip.budgetLogs.length > 0 && (
+                            <div className="glass-card p-4 border-gray-100 mb-6 bg-white/40">
+                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Budget History</h4>
+                                <div className="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                                    {trip.budgetLogs.map(log => (
+                                        <div key={log.id} className="flex justify-between items-center bg-white/60 p-2 rounded-lg border border-white/50 shadow-sm">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold shadow-sm">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                <span className="text-sm font-bold text-gray-700">Top Up</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="block font-bold text-green-600">+${log.amount}</span>
+                                                <span className="text-[10px] text-gray-400 font-medium">{new Date(log.date).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
 

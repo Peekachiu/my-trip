@@ -16,8 +16,8 @@ const trips: Trip[] = [
         budget: 5000,
         assignedToIds: ['2'],
         itinerary: [
-            { id: '1', day: 1, time: '10:00', activity: 'Arrive at Tokyo' },
-            { id: '2', day: 1, time: '18:00', activity: 'Dinner in Shibuya' },
+            { id: '1', day: 1, time: '10:00', title: 'Arrive at Tokyo' },
+            { id: '2', day: 1, time: '18:00', title: 'Dinner in Shibuya' },
         ],
         expenses: [
             { id: '1', amount: 50, category: 'Food', note: 'Ramen', date: '2024-07-01' }

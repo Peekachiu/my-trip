@@ -51,11 +51,13 @@ export const getTripById = async (req: Request, res: Response) => {
             [tripId]
         );
         const [assignedUsers]: any = await pool.execute('SELECT user_id FROM trip_assignments WHERE trip_id = ?', [tripId]);
+        const [budgetLogs]: any = await pool.execute('SELECT * FROM budget_logs WHERE trip_id = ? ORDER BY date DESC, created_at DESC', [tripId]);
 
         trip.itinerary = itinerary;
         trip.expenses = expenses;
         trip.assignments = assignments;
         trip.assignedToIds = assignedUsers.map((u: any) => u.user_id);
+        trip.budgetLogs = budgetLogs;
 
         // Map snake_case DB columns to camelCase for frontend
         trip.startDate = trip.start_date;
@@ -100,8 +102,8 @@ export const createTrip = async (req: Request, res: Response) => {
         if (itinerary && itinerary.length > 0) {
             for (const item of itinerary) {
                 await connection.execute(
-                    'INSERT INTO itinerary_items (id, trip_id, day, time, date, activity) VALUES (?, ?, ?, ?, ?, ?)',
-                    [generateId(), tripId, item.day, item.time, item.date || null, item.activity]
+                    'INSERT INTO itinerary_items (id, trip_id, day, time, date, title, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    [generateId(), tripId, item.day, item.time, item.date || null, item.title, item.description || null, item.url || null]
                 );
             }
         }
@@ -140,8 +142,8 @@ export const updateTrip = async (req: Request, res: Response) => {
         if (itinerary && itinerary.length > 0) {
             for (const item of itinerary) {
                 await connection.execute(
-                    'INSERT INTO itinerary_items (id, trip_id, day, time, date, activity) VALUES (?, ?, ?, ?, ?, ?)',
-                    [generateId(), tripId, item.day, item.time, item.date || null, item.activity]
+                    'INSERT INTO itinerary_items (id, trip_id, day, time, date, title, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    [generateId(), tripId, item.day, item.time, item.date || null, item.title, item.description || null, item.url || null]
                 );
             }
         }

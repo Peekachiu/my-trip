@@ -30,7 +30,9 @@ CREATE TABLE IF NOT EXISTS itinerary_items (
   day INT,
   time VARCHAR(10),
   date DATE,
-  activity TEXT,
+  title VARCHAR(255),
+  description TEXT,
+  url VARCHAR(500),
   FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
 );
 

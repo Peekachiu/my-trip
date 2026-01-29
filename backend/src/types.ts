@@ -16,12 +16,20 @@ export interface Expense {
     date: string;
 }
 
+export interface BudgetLog {
+    id: string;
+    amount: number;
+    date: string;
+}
+
 export interface ItineraryItem {
     id: string;
     day: number;
     time: string;
     date?: string; // Optional for implementation ease, but effectively required
-    activity: string;
+    title: string;
+    description?: string;
+    url?: string;
 }
 
 export interface Trip {
@@ -34,4 +42,5 @@ export interface Trip {
     assignedToIds: string[]; // User IDs
     itinerary: ItineraryItem[];
     expenses: Expense[];
+    budgetLogs?: BudgetLog[];
 }
