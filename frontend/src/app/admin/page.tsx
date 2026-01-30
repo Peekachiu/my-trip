@@ -4,16 +4,18 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/language';
+import { useCurrency } from '@/lib/currency';
 import Link from 'next/link';
 import CreateUserForm from '@/components/CreateUserForm';
 import CreateTripForm from '@/components/CreateTripForm';
 
 type User = { id: string; username: string; role: string };
-type Trip = { id: string; title: string; destination: string; budget: number; };
+type Trip = { id: string; title: string; destination: string; budget: number; baseCurrency: string; };
 
 export default function AdminDashboard() {
     const { user, logout } = useAuth();
     const { t } = useLanguage();
+    const { format } = useCurrency();
     const [users, setUsers] = useState<User[]>([]);
     const [trips, setTrips] = useState<Trip[]>([]);
     const [showCreateUser, setShowCreateUser] = useState(false);
@@ -92,7 +94,7 @@ export default function AdminDashboard() {
                                 <p className="font-bold text-lg text-gray-800 dark:text-gray-100">{t.title}</p>
                                 <div className="flex justify-between items-center mt-2">
                                     <span className="text-brand-magenta font-medium">{t.destination}</span>
-                                    <span className="text-brand-cyan font-bold bg-brand-light-cyan/50 px-2 py-1 rounded-md">${t.budget}</span>
+                                    <span className="text-brand-cyan font-bold bg-brand-light-cyan/50 px-2 py-1 rounded-md">{format(t.budget, t.baseCurrency || 'MYR')}</span>
                                 </div>
                             </div>
                         </Link>
@@ -119,7 +121,7 @@ export default function AdminDashboard() {
                                                 <p className="font-bold text-gray-800 dark:text-gray-200 text-sm">{t.title}</p>
                                                 <p className="text-xs text-brand-magenta">{t.destination}</p>
                                             </div>
-                                            <span className="text-xs font-bold text-brand-cyan">${t.budget}</span>
+                                            <span className="text-xs font-bold text-brand-cyan">{format(t.budget, t.baseCurrency || 'MYR')}</span>
                                         </div>
                                     </div>
                                 ))

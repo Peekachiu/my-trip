@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/lib/theme";
 import { LanguageProvider } from "@/lib/language";
+import { CurrencyProvider } from "@/lib/currency";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -35,11 +36,13 @@ export default function RootLayout({
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>
-              <Header />
-              <main className="flex-grow pt-20">
-                {children}
-              </main>
-              <Footer />
+              <CurrencyProvider>
+                <Header />
+                <main className="flex-grow pt-20">
+                  {children}
+                </main>
+                <Footer />
+              </CurrencyProvider>
             </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>

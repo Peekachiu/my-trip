@@ -8,7 +8,11 @@ const generateId = () => Math.random().toString(36).substring(2, 9);
 export const getAllTrips = async (req: Request, res: Response) => {
     try {
         const [trips]: any = await pool.execute('SELECT * FROM trips');
-        res.json(trips);
+        const tripsMapped = trips.map((t: any) => ({
+            ...t,
+            baseCurrency: t.base_currency || 'MYR'
+        }));
+        res.json(tripsMapped);
     } catch (error) {
         res.status(500).json({ error: 'Database error' });
     }
@@ -26,7 +30,8 @@ export const getTripsForUser = async (req: Request, res: Response) => {
         const tripsMapped = trips.map((t: any) => ({
             ...t,
             startDate: t.start_date,
-            endDate: t.end_date
+            endDate: t.end_date,
+            baseCurrency: t.base_currency || 'MYR'
         }));
         res.json(tripsMapped);
     } catch (error) {

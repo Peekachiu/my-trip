@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/language';
+import { useTheme } from '@/lib/theme';
+import CurrencySelector from './CurrencySelector';
 
 export default function Header() {
     const { user, logout } = useAuth();
@@ -35,7 +37,10 @@ export default function Header() {
             </Link>
 
             {user && (
-                <div className="relative" ref={dropdownRef}>
+                <div className="relative flex items-center gap-4" ref={dropdownRef}>
+                    <div className="hidden md:flex items-center gap-4">
+                        <CurrencySelector />
+                    </div>
                     <button
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         className="flex items-center gap-3 hover:bg-white/20 p-2 rounded-full transition-all"

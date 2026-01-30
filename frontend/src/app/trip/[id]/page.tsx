@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/language';
+import { useCurrency } from '@/lib/currency';
 import CreateTripForm from '@/components/CreateTripForm';
 
 type Expense = { id: string; amount: number; category: string; note: string; date: string; type: 'group' | 'individual'; userId: string; currency?: string; exchangeRate?: number; };
@@ -44,12 +45,13 @@ export default function TripDetailsPage() {
     const { id } = useParams();
     const { user } = useAuth();
     const { t } = useLanguage();
+    const { format } = useCurrency();
     const [trip, setTrip] = useState<Trip | null>(null);
     const [activeTab, setActiveTab] = useState<'overview' | 'itinerary' | 'group_budget' | 'my_budget'>('overview');
     const [isEditingTrip, setIsEditingTrip] = useState(false);
 
     // Forms
-    const [expenseForm, setExpenseForm] = useState({ amount: '', category: 'Food', note: '', date: '', currency: 'USD' });
+    const [expenseForm, setExpenseForm] = useState({ amount: '', category: 'Food', note: '', date: '', currency: 'MYR' });
     const [personalBudgetLimit, setPersonalBudgetLimit] = useState<number>(0);
     const [isEditingPersonalBudget, setIsEditingPersonalBudget] = useState(false);
     const [isAddingGroupExpense, setIsAddingGroupExpense] = useState(false);
@@ -82,7 +84,7 @@ export default function TripDetailsPage() {
                 currency: expenseForm.currency
             });
 
-            setExpenseForm({ amount: '', category: 'Food', note: '', date: '', currency: trip.baseCurrency || 'USD' });
+            setExpenseForm({ amount: '', category: 'Food', note: '', date: '', currency: trip.baseCurrency || 'MYR' });
             setIsAddingGroupExpense(false);
             setIsAddingPersonalExpense(false);
             refreshData();
@@ -190,13 +192,13 @@ export default function TripDetailsPage() {
                             <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider mb-2">{t('trip.groupBudget')}</h3>
                             <div className="flex justify-between items-end mb-2">
                                 <div>
-                                    <span className="text-3xl font-bold text-gray-800">${totalGroupSpent}</span>
-                                    <span className="text-gray-400 font-medium mb-1"> / ${trip.budget}</span>
+                                    <span className="text-3xl font-bold text-gray-800">{format(totalGroupSpent, trip.baseCurrency || 'MYR')}</span>
+                                    <span className="text-gray-400 font-medium mb-1"> / {format(trip.budget, trip.baseCurrency || 'MYR')}</span>
                                 </div>
                                 <div className="text-right">
                                     <span className="text-xs text-gray-400 uppercase font-bold block">{t('trip.balance')}</span>
                                     <span className={`text-xl font-bold ${trip.budget - totalGroupSpent >= 0 ? 'text-brand-cyan' : 'text-red-500'}`}>
-                                        ${(trip.budget - totalGroupSpent).toFixed(2)}
+                                        {format(trip.budget - totalGroupSpent, trip.baseCurrency || 'MYR')}
                                     </span>
                                 </div>
                             </div>
@@ -213,13 +215,13 @@ export default function TripDetailsPage() {
                                 <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider mb-2">{t('trip.myBudget')}</h3>
                                 <div className="flex justify-between items-end mb-2">
                                     <div>
-                                        <span className="text-3xl font-bold text-gray-800">${totalPersonalSpent}</span>
-                                        <span className="text-gray-400 font-medium mb-1"> / ${personalBudgetLimit}</span>
+                                        <span className="text-3xl font-bold text-gray-800">{format(totalPersonalSpent, trip.baseCurrency || 'MYR')}</span>
+                                        <span className="text-gray-400 font-medium mb-1"> / {format(personalBudgetLimit, trip.baseCurrency || 'MYR')}</span>
                                     </div>
                                     <div className="text-right">
                                         <span className="text-xs text-gray-400 uppercase font-bold block">{t('trip.balance')}</span>
                                         <span className={`text-xl font-bold ${personalBudgetLimit - totalPersonalSpent >= 0 ? 'text-brand-pink' : 'text-red-500'}`}>
-                                            ${(personalBudgetLimit - totalPersonalSpent).toFixed(2)}
+                                            {format(personalBudgetLimit - totalPersonalSpent, trip.baseCurrency || 'MYR')}
                                         </span>
                                     </div>
                                 </div>
@@ -257,7 +259,7 @@ export default function TripDetailsPage() {
                                             </div>
                                             <div className="flex-1">
                                                 <p className="font-bold text-gray-800">{assignment.username}</p>
-                                                <p className="text-xs text-gray-500">{t('trip.budget')}: ${assignment.personal_budget}</p>
+                                                <p className="text-xs text-gray-500">{t('trip.budget')}: {format(assignment.personal_budget, trip.baseCurrency || 'MYR')}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -359,7 +361,7 @@ export default function TripDetailsPage() {
                                                 <span className="text-sm font-bold text-gray-700">{t('trip.topUp')}</span>
                                             </div>
                                             <div className="text-right">
-                                                <span className="block font-bold text-green-600">+${log.amount}</span>
+                                                <span className="block font-bold text-green-600">+{format(log.amount, trip.baseCurrency || 'MYR')}</span>
                                                 <span className="text-[10px] text-gray-400 font-medium">{new Date(log.date).toLocaleDateString()}</span>
                                             </div>
                                         </div>
@@ -407,7 +409,7 @@ export default function TripDetailsPage() {
                             {groupExpenses.slice().reverse().map(exp => (
                                 <div key={exp.id} className="flex justify-between items-center glass-card p-3 border-l-4 border-brand-cyan">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-brand-light-cyan flex items-center justify-center text-brand-cyan text-lg">$</div>
+                                        <div className="h-10 w-10 rounded-full bg-brand-light-cyan flex items-center justify-center text-brand-cyan text-sm font-bold">RM</div>
                                         <div>
                                             <p className="font-bold text-gray-800">{exp.category}</p>
                                             <div className="text-xs text-gray-500">
@@ -416,9 +418,9 @@ export default function TripDetailsPage() {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <span className="font-bold text-brand-cyan text-lg block">-{exp.amount} {exp.currency}</span>
-                                        {exp.currency !== (trip.baseCurrency || 'USD') && (
-                                            <span className="text-xs text-gray-400">~{((Number(exp.amount) * (Number(exp.exchangeRate) || 1)).toFixed(2))} {trip.baseCurrency}</span>
+                                        <span className="font-bold text-brand-cyan text-lg block">-{format(Number(exp.amount), exp.currency || 'MYR')}</span>
+                                        {exp.currency !== (trip.baseCurrency || 'MYR') && (
+                                            <span className="text-xs text-gray-400">Original: {exp.amount} {exp.currency}</span>
                                         )}
                                     </div>
                                 </div>
@@ -443,7 +445,7 @@ export default function TripDetailsPage() {
                                 <input type="number" className="w-full text-2xl font-bold text-brand-pink border-b border-brand-pink focus:outline-none"
                                     value={personalBudgetLimit} onChange={e => setPersonalBudgetLimit(parseFloat(e.target.value))} />
                             ) : (
-                                <p className="text-2xl font-bold text-brand-pink">${personalBudgetLimit}</p>
+                                <p className="text-2xl font-bold text-brand-pink">{format(personalBudgetLimit, trip.baseCurrency || 'MYR')}</p>
                             )}
                         </div>
 
@@ -484,7 +486,7 @@ export default function TripDetailsPage() {
                             {myExpenses.slice().reverse().map(exp => (
                                 <div key={exp.id} className="flex justify-between items-center glass-card p-3 border-l-4 border-brand-pink">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-brand-pink/20 flex items-center justify-center text-brand-pink text-lg">$</div>
+                                        <div className="h-10 w-10 rounded-full bg-brand-pink/20 flex items-center justify-center text-brand-pink text-sm font-bold">RM</div>
                                         <div>
                                             <p className="font-bold text-gray-800">{exp.category}</p>
                                             <div className="text-xs text-gray-500">
@@ -493,9 +495,9 @@ export default function TripDetailsPage() {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <span className="font-bold text-brand-pink text-lg block">-{exp.amount} {exp.currency}</span>
-                                        {exp.currency !== (trip.baseCurrency || 'USD') && (
-                                            <span className="text-xs text-gray-400">~{((Number(exp.amount) * (Number(exp.exchangeRate) || 1)).toFixed(2))} {trip.baseCurrency}</span>
+                                        <span className="font-bold text-brand-pink text-lg block">-{format(Number(exp.amount), exp.currency || 'MYR')}</span>
+                                        {exp.currency !== (trip.baseCurrency || 'MYR') && (
+                                            <span className="text-xs text-gray-400">Original: {exp.amount} {exp.currency}</span>
                                         )}
                                     </div>
                                 </div>

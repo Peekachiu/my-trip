@@ -2,16 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/language';
+import { useCurrency } from '@/lib/currency';
 
 export default function CurrencyWidget() {
     const { t } = useLanguage();
+    const { currency: globalCurrency } = useCurrency();
     const [rates, setRates] = useState<any>(null);
-    const [amount, setAmount] = useState(1);
-    const [from, setFrom] = useState('USD');
-    const [to, setTo] = useState('MYR');
+    const [amount, setAmount] = useState<string>('1');
+    const [fromCurrency, setFromCurrency] = useState('MYR');
+    const [toCurrency, setToCurrency] = useState(globalCurrency);
     const [loading, setLoading] = useState(true);
 
     const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'MYR', 'SGD', 'CNY', 'AUD', 'CAD', 'KRW'];
+
+    useEffect(() => {
+        setToCurrency(globalCurrency);
+    }, [globalCurrency]);
 
     useEffect(() => {
         fetch('https://api.exchangerate-api.com/v4/latest/USD')
@@ -25,10 +31,11 @@ export default function CurrencyWidget() {
 
     const convert = () => {
         if (!rates) return 0;
+        const val = parseFloat(amount) || 0;
         // Rate from base (USD)
-        const rateFrom = rates[from];
-        const rateTo = rates[to];
-        return (amount / rateFrom) * rateTo;
+        const rateFrom = rates[fromCurrency];
+        const rateTo = rates[toCurrency];
+        return (val / rateFrom) * rateTo;
     };
 
     if (loading) return <div className="glass-card p-4 animate-pulse h-40"></div>;
@@ -43,20 +50,20 @@ export default function CurrencyWidget() {
                 <input
                     type="number"
                     value={amount}
-                    onChange={e => setAmount(parseFloat(e.target.value) || 0)}
+                    onChange={e => setAmount(e.target.value)}
                     className="w-1/3 p-2 bg-gray-50 rounded-lg text-gray-800 font-bold text-center border focus:border-brand-cyan outline-none"
                 />
                 <select
-                    value={from}
-                    onChange={e => setFrom(e.target.value)}
+                    value={fromCurrency}
+                    onChange={e => setFromCurrency(e.target.value)}
                     className="w-1/3 p-2 bg-gray-50 rounded-lg text-gray-800 font-bold border focus:border-brand-cyan outline-none"
                 >
                     {currencies.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
                 <span className="text-gray-400">to</span>
                 <select
-                    value={to}
-                    onChange={e => setTo(e.target.value)}
+                    value={toCurrency}
+                    onChange={e => setToCurrency(e.target.value)}
                     className="w-1/3 p-2 bg-gray-50 rounded-lg text-gray-800 font-bold border focus:border-brand-cyan outline-none"
                 >
                     {currencies.map(c => <option key={c} value={c}>{c}</option>)}
@@ -65,10 +72,10 @@ export default function CurrencyWidget() {
 
             <div className="text-center p-3 bg-brand-cyan/5 rounded-xl border border-brand-cyan/10">
                 <p className="text-xs text-gray-500 mb-1">
-                    {amount} {from} =
+                    {amount} {fromCurrency} =
                 </p>
                 <p className="text-2xl font-bold text-brand-cyan">
-                    {convert().toFixed(2)} {to}
+                    {convert().toFixed(2)} {toCurrency}
                 </p>
             </div>
 
