@@ -13,9 +13,10 @@ type CurrencyContextType = {
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
-const FLAG_MAP: Record<string, string> = {
-    USD: '🇺🇸', EUR: '🇪🇺', GBP: '🇬🇧', JPY: '🇯🇵', MYR: '🇲🇾',
-    SGD: '🇸🇬', CNY: '🇨🇳', AUD: '🇦🇺', CAD: '🇨🇦', KRW: '🇰🇷'
+export const CURRENCY_COUNTRY_MAP: Record<string, string> = {
+    USD: 'us', EUR: 'eu', GBP: 'gb', JPY: 'jp', MYR: 'my',
+    SGD: 'sg', CNY: 'cn', AUD: 'au', CAD: 'ca', KRW: 'kr',
+    THB: 'th'
 };
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
@@ -68,4 +69,4 @@ export const useCurrency = () => {
     return context;
 };
 
-export const FLAGS = FLAG_MAP;
+export const FLAGS = CURRENCY_COUNTRY_MAP;

@@ -15,7 +15,14 @@ export default function CurrencySelector() {
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-all text-gray-800 dark:text-white font-bold text-sm backdrop-blur-md border border-gray-200 dark:border-white/20"
             >
-                <span className="text-lg">{FLAGS[currency]}</span>
+                <img
+                    src={`https://flagcdn.com/w40/${FLAGS[currency]}.png`}
+                    srcSet={`https://flagcdn.com/w80/${FLAGS[currency]}.png 2x`}
+                    width="24"
+                    height="16"
+                    alt={currency}
+                    className="rounded-sm object-cover"
+                />
                 <span>{currency}</span>
             </button>
 
@@ -33,7 +40,14 @@ export default function CurrencySelector() {
                                     }}
                                     className={`w-full text-left px-4 py-2 hover:bg-brand-cyan/10 transition-colors flex items-center gap-3 ${currency === c ? 'bg-brand-cyan/5 text-brand-cyan font-bold' : 'text-gray-700 dark:text-gray-200'}`}
                                 >
-                                    <span className="text-xl">{FLAGS[c]}</span>
+                                    <img
+                                        src={`https://flagcdn.com/w40/${FLAGS[c]}.png`}
+                                        srcSet={`https://flagcdn.com/w80/${FLAGS[c]}.png 2x`}
+                                        width="24"
+                                        height="16"
+                                        alt={c}
+                                        className="rounded-sm object-cover"
+                                    />
                                     <span>{c}</span>
                                     {currency === c && <span className="ml-auto text-xs">✓</span>}
                                 </button>
