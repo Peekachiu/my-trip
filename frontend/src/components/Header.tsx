@@ -37,49 +37,51 @@ export default function Header() {
             </Link>
 
             {user && (
-                <div className="relative flex items-center gap-4" ref={dropdownRef}>
+                <div className="flex items-center gap-4">
                     <div className="hidden md:flex items-center gap-4">
                         <CurrencySelector />
                     </div>
-                    <button
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="flex items-center gap-3 hover:bg-white/20 p-2 rounded-full transition-all"
-                    >
-                        <div className="hidden sm:flex flex-col items-end">
-                            <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{user.username}</span>
-                            <span className="text-[10px] uppercase font-bold text-brand-magenta tracking-wider bg-brand-pink/10 px-1.5 rounded-full">
-                                {user.role}
-                            </span>
-                        </div>
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-brand-cyan to-brand-light-cyan border-2 border-white shadow-sm flex items-center justify-center text-brand-magenta font-bold text-lg">
-                            {user.username.charAt(0).toUpperCase()}
-                        </div>
-                    </button>
+                    <div className="relative" ref={dropdownRef}>
+                        <button
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            className="flex items-center gap-3 hover:bg-white/20 dark:hover:bg-gray-800/50 p-2 pr-4 rounded-full transition-all duration-300 cursor-pointer hover:shadow-lg active:scale-95 group border border-transparent hover:border-white/20"
+                        >
+                            <div className="hidden sm:flex flex-col items-end">
+                                <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{user.username}</span>
+                                <span className="text-[10px] uppercase font-bold text-brand-magenta tracking-wider bg-brand-pink/10 px-1.5 rounded-full">
+                                    {user.role}
+                                </span>
+                            </div>
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-brand-cyan to-brand-light-cyan border-2 border-white shadow-sm flex items-center justify-center text-brand-magenta font-bold text-lg">
+                                {user.username.charAt(0).toUpperCase()}
+                            </div>
+                        </button>
 
-                    {isDropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-56 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-xl shadow-2xl border border-white/50 dark:border-gray-700 overflow-hidden animate-fadeIn z-[101]">
-                            <div className="p-2 space-y-1">
-                                <button className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-brand-cyan/10 hover:text-brand-cyan rounded-lg transition-colors flex items-center gap-2">
-                                    🔔 {t('nav.notification')}
-                                </button>
-                                <Link
-                                    href="/settings"
-                                    onClick={() => setIsDropdownOpen(false)}
-                                    className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-brand-cyan/10 hover:text-brand-cyan rounded-lg transition-colors flex items-center gap-2"
-                                >
-                                    ⚙️ {t('nav.settings')}
-                                </Link>
+                        {isDropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-56 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-xl shadow-2xl border border-white/50 dark:border-gray-700 overflow-hidden animate-fadeIn z-[101]">
+                                <div className="p-2 space-y-1">
+                                    <button className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-brand-cyan/10 hover:text-brand-cyan rounded-lg transition-colors flex items-center gap-2">
+                                        🔔 {t('nav.notification')}
+                                    </button>
+                                    <Link
+                                        href="/settings"
+                                        onClick={() => setIsDropdownOpen(false)}
+                                        className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-brand-cyan/10 hover:text-brand-cyan rounded-lg transition-colors flex items-center gap-2"
+                                    >
+                                        ⚙️ {t('nav.settings')}
+                                    </Link>
+                                </div>
+                                <div className="border-t border-gray-100 p-2">
+                                    <button
+                                        onClick={logout}
+                                        className="w-full text-left px-4 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
+                                    >
+                                        🚪 {t('nav.logout')}
+                                    </button>
+                                </div>
                             </div>
-                            <div className="border-t border-gray-100 p-2">
-                                <button
-                                    onClick={logout}
-                                    className="w-full text-left px-4 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
-                                >
-                                    🚪 {t('nav.logout')}
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             )}
         </header>
