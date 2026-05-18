@@ -12,8 +12,18 @@ CREATE TABLE IF NOT EXISTS trips (
   destination VARCHAR(255) NOT NULL,
   start_date DATE,
   end_date DATE,
-  budget DECIMAL(10, 2)
+  budget DECIMAL(10, 2),
+  base_currency VARCHAR(10) DEFAULT 'MYR',
+  is_completed TINYINT(1) NOT NULL DEFAULT 0,
+  completed_at DATETIME NULL,
+  deleted_at DATETIME NULL
 );
+
+-- Idempotent ALTERs for upgrading existing databases (ignore errors if columns already exist)
+-- Run these manually if needed:
+-- ALTER TABLE trips ADD COLUMN is_completed TINYINT(1) NOT NULL DEFAULT 0;
+-- ALTER TABLE trips ADD COLUMN completed_at DATETIME NULL;
+-- ALTER TABLE trips ADD COLUMN deleted_at DATETIME NULL;
 
 CREATE TABLE IF NOT EXISTS trip_assignments (
   trip_id VARCHAR(36),

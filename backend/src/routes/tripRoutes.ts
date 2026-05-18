@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllTrips, getTripsForUser, getTripById, createTrip, updateTrip, addExpense, updatePersonalBudget, updateGroupBudget } from '../controllers/tripController';
+import { getAllTrips, getTripsForUser, getTripById, createTrip, updateTrip, addExpense, updatePersonalBudget, updateGroupBudget, completeTrip, uncompleteTrip, deleteTrip, restoreTrip, permanentlyDeleteTrip } from '../controllers/tripController';
 
 const router = Router();
 
@@ -11,5 +11,12 @@ router.put('/:id', updateTrip);
 router.post('/:id/expenses', addExpense);
 router.patch('/:id/personal-budget', updatePersonalBudget);
 router.patch('/:id/group-budget', updateGroupBudget);
+
+// Lifecycle actions
+router.patch('/:id/complete', completeTrip);
+router.patch('/:id/uncomplete', uncompleteTrip);
+router.delete('/:id', deleteTrip);              // soft delete
+router.patch('/:id/restore', restoreTrip);
+router.delete('/:id/permanent', permanentlyDeleteTrip); // hard delete
 
 export default router;

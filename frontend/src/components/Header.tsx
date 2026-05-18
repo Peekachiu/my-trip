@@ -27,7 +27,7 @@ export default function Header() {
 
     return (
         <header className="fixed top-0 left-0 w-full z-[100] glass !bg-white/80 dark:!bg-black/80 dark:border-b dark:border-white/10 px-6 py-3 flex justify-between items-center transition-all duration-300">
-            <Link href={user ? (user.role === 'admin' ? '/admin' : '/dashboard') : '/'} className="flex items-center gap-2 group">
+            <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2 group">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-cyan to-brand-magenta flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:rotate-12 transition-transform">
                     P
                 </div>
@@ -63,6 +63,13 @@ export default function Header() {
                                     <button className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-brand-cyan/10 hover:text-brand-cyan rounded-lg transition-colors flex items-center gap-2">
                                         🔔 {t('nav.notification')}
                                     </button>
+                                    <Link
+                                        href="/archive"
+                                        onClick={() => setIsDropdownOpen(false)}
+                                        className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-brand-cyan/10 hover:text-brand-cyan rounded-lg transition-colors flex items-center gap-2"
+                                    >
+                                        🗄️ {t('nav.archive')}
+                                    </Link>
                                     <Link
                                         href="/settings"
                                         onClick={() => setIsDropdownOpen(false)}

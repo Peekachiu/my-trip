@@ -37,9 +37,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (res.id) {
                 setUser(res);
                 localStorage.setItem('trip_user', JSON.stringify(res));
-                // Redirect based on role
-                if (res.role === 'admin') router.push('/admin');
-                else router.push('/dashboard');
+                // Both admin and regular users land on /dashboard
+                // (admin-only sections are rendered inside the page when role==='admin')
+                router.push('/dashboard');
                 return true;
             }
         } catch (e) {

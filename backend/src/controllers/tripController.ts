@@ -6,11 +6,20 @@ import { convertCurrency } from '../lib/currency';
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
 export const getAllTrips = async (req: Request, res: Response) => {
+    const includeDeleted = req.query.includeDeleted === 'true';
     try {
-        const [trips]: any = await pool.execute('SELECT * FROM trips');
+        const sql = includeDeleted
+            ? 'SELECT * FROM trips'
+            : 'SELECT * FROM trips WHERE deleted_at IS NULL';
+        const [trips]: any = await pool.execute(sql);
         const tripsMapped = trips.map((t: any) => ({
             ...t,
-            baseCurrency: t.base_currency || 'MYR'
+            startDate: t.start_date,
+            endDate: t.end_date,
+            baseCurrency: t.base_currency || 'MYR',
+            isCompleted: !!t.is_completed,
+            completedAt: t.completed_at,
+            deletedAt: t.deleted_at
         }));
         res.json(tripsMapped);
     } catch (error) {
@@ -20,18 +29,24 @@ export const getAllTrips = async (req: Request, res: Response) => {
 
 export const getTripsForUser = async (req: Request, res: Response) => {
     const userId = req.params.userId;
+    const includeDeleted = req.query.includeDeleted === 'true';
     try {
-        const [trips]: any = await pool.execute(
-            `SELECT t.* FROM trips t 
-             JOIN trip_assignments ta ON t.id = ta.trip_id 
-             WHERE ta.user_id = ?`,
-            [userId]
-        );
+        const sql = includeDeleted
+            ? `SELECT t.* FROM trips t
+               JOIN trip_assignments ta ON t.id = ta.trip_id
+               WHERE ta.user_id = ?`
+            : `SELECT t.* FROM trips t
+               JOIN trip_assignments ta ON t.id = ta.trip_id
+               WHERE ta.user_id = ? AND t.deleted_at IS NULL`;
+        const [trips]: any = await pool.execute(sql, [userId]);
         const tripsMapped = trips.map((t: any) => ({
             ...t,
             startDate: t.start_date,
             endDate: t.end_date,
-            baseCurrency: t.base_currency || 'MYR'
+            baseCurrency: t.base_currency || 'MYR',
+            isCompleted: !!t.is_completed,
+            completedAt: t.completed_at,
+            deletedAt: t.deleted_at
         }));
         res.json(tripsMapped);
     } catch (error) {
@@ -78,6 +93,9 @@ export const getTripById = async (req: Request, res: Response) => {
         trip.startDate = trip.start_date;
         trip.endDate = trip.end_date;
         trip.baseCurrency = trip.base_currency || 'USD';
+        trip.isCompleted = !!trip.is_completed;
+        trip.completedAt = trip.completed_at;
+        trip.deletedAt = trip.deleted_at;
 
         res.json(trip);
     } catch (error) {
@@ -278,5 +296,77 @@ export const updateGroupBudget = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to update group budget' });
     } finally {
         connection.release();
+    }
+};
+
+// Mark a trip as completed (manual override regardless of dates)
+export const completeTrip = async (req: Request, res: Response) => {
+    const tripId = req.params.id;
+    try {
+        await pool.execute(
+            'UPDATE trips SET is_completed = 1, completed_at = NOW() WHERE id = ?',
+            [tripId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to complete trip' });
+    }
+};
+
+// Reopen a trip (mark as not completed)
+export const uncompleteTrip = async (req: Request, res: Response) => {
+    const tripId = req.params.id;
+    try {
+        await pool.execute(
+            'UPDATE trips SET is_completed = 0, completed_at = NULL WHERE id = ?',
+            [tripId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to reopen trip' });
+    }
+};
+
+// Soft-delete a trip (move to archive)
+export const deleteTrip = async (req: Request, res: Response) => {
+    const tripId = req.params.id;
+    try {
+        await pool.execute(
+            'UPDATE trips SET deleted_at = NOW() WHERE id = ?',
+            [tripId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete trip' });
+    }
+};
+
+// Restore a soft-deleted trip
+export const restoreTrip = async (req: Request, res: Response) => {
+    const tripId = req.params.id;
+    try {
+        await pool.execute(
+            'UPDATE trips SET deleted_at = NULL WHERE id = ?',
+            [tripId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to restore trip' });
+    }
+};
+
+// Permanently delete a trip (hard delete, cascade removes related rows)
+export const permanentlyDeleteTrip = async (req: Request, res: Response) => {
+    const tripId = req.params.id;
+    try {
+        await pool.execute('DELETE FROM trips WHERE id = ?', [tripId]);
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to permanently delete trip' });
     }
 };

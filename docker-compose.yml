@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     image: peekachiu/my-trip-backend:latest

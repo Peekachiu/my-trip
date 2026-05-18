@@ -18,6 +18,7 @@ export const translations = {
             settings: 'Settings',
             logout: 'Logout',
             notification: 'Notification',
+            archive: 'Archive',
         },
         settings: {
             title: 'Settings',
@@ -47,6 +48,7 @@ export const translations = {
             assignedTrips: 'Assigned Trips',
             noAssignedTrips: 'No trips assigned.',
             deleteUserConfirm: 'Are you sure you want to delete this user? This action cannot be undone.',
+            adminPanel: 'Admin Panel',
             deleteUser: 'Delete User',
         },
         roles: {
@@ -98,9 +100,57 @@ export const translations = {
                 upcoming: 'Upcoming',
                 ongoing: 'Ongoing',
                 completed: 'Completed',
+                deleted: 'Deleted',
                 daysLeft: 'days to go',
                 today: 'Starting today!'
+            },
+            actions: {
+                markCompleted: 'Mark as Completed',
+                reopen: 'Reopen Trip',
+                delete: 'Delete Trip',
+                restore: 'Restore',
+                permanentDelete: 'Delete Permanently',
+                confirmComplete: 'Mark this trip as completed?',
+                confirmReopen: 'Reopen this trip?',
+                confirmDelete: 'Move this trip to the Deleted archive? You can restore it later.',
+                confirmRestore: 'Restore this trip?',
+                confirmPermanent: 'Permanently delete this trip? This cannot be undone.'
             }
+        },
+        filter: {
+            all: 'All',
+            upcoming: 'Upcoming',
+            ongoing: 'Ongoing',
+            completed: 'Completed',
+            deleted: 'Deleted',
+            empty: 'No trips in this category.'
+        },
+        archive: {
+            title: 'Archive',
+            subtitle: 'Trips you have completed or deleted live here. Restore or remove them anytime.'
+        },
+        home: {
+            heroTitle1: 'Discover Your Next Adventure',
+            heroSubtitle1: 'Plan, track and relive every journey in one place.',
+            heroTitle2: 'Wander Beyond Borders',
+            heroSubtitle2: 'From hidden alleys to mountain peaks — your story starts here.',
+            heroTitle3: 'Travel Smarter, Together',
+            heroSubtitle3: 'Budgets, itineraries and memories — neatly organized.',
+            heroCta: 'Explore My Trips',
+            trendingTitle: 'Trending Destinations',
+            trendingSubtitle: 'Inspiration for your next escape',
+            statsTitle: 'Your Travel Stats',
+            statsCountries: 'Countries Visited',
+            statsTotal: 'Total Trips',
+            statsCompleted: 'Completed',
+            statsUpcoming: 'Upcoming',
+            countdownTitle: 'Next Adventure In',
+            countdownNone: 'No upcoming trip yet — time to plan one!',
+            countdownDays: 'days',
+            countdownHours: 'hrs',
+            countdownMinutes: 'min',
+            countdownSeconds: 'sec',
+            countdownToday: 'Your trip starts today!'
         }
     },
     zh: {
@@ -120,6 +170,7 @@ export const translations = {
             settings: '设置',
             logout: '登出',
             notification: '通知',
+            archive: '归档',
         },
         settings: {
             title: '设置',
@@ -149,6 +200,7 @@ export const translations = {
             assignedTrips: '已分配旅程',
             noAssignedTrips: '暂无分配的旅程。',
             deleteUserConfirm: '确定要删除此用户吗？此操作无法撤销。',
+            adminPanel: '管理员面板',
             deleteUser: '删除用户',
         },
         roles: {
@@ -200,9 +252,57 @@ export const translations = {
                 upcoming: '即将开始',
                 ongoing: '进行中',
                 completed: '已结束',
+                deleted: '已删除',
                 daysLeft: '天后出发',
                 today: '今天出发！'
+            },
+            actions: {
+                markCompleted: '标记为已完成',
+                reopen: '重新开启旅程',
+                delete: '删除旅程',
+                restore: '恢复',
+                permanentDelete: '永久删除',
+                confirmComplete: '将此旅程标记为已完成？',
+                confirmReopen: '重新开启此旅程？',
+                confirmDelete: '将此旅程移至「已删除」归档？稍后可恢复。',
+                confirmRestore: '恢复此旅程？',
+                confirmPermanent: '永久删除此旅程？此操作无法撤销。'
             }
+        },
+        filter: {
+            all: '全部',
+            upcoming: '即将到来',
+            ongoing: '进行中',
+            completed: '已完成',
+            deleted: '已删除',
+            empty: '此类别下暂无旅程。'
+        },
+        archive: {
+            title: '归档',
+            subtitle: '已完成或已删除的旅程都在这里，随时可息复或清除。'
+        },
+        home: {
+            heroTitle1: '探索你的下一次冒险',
+            heroSubtitle1: '一站式规划、追踪并重温每一段旅程。',
+            heroTitle2: '跨越国界，自由漫步',
+            heroSubtitle2: '从隐秘小巷到雪山之巅 — 故事从这里开始。',
+            heroTitle3: '更聪明地一起旅行',
+            heroSubtitle3: '预算、行程与回忆 — 井然有序。',
+            heroCta: '查看我的旅程',
+            trendingTitle: '热门目的地',
+            trendingSubtitle: '为下一次出走带来灵感',
+            statsTitle: '我的旅行数据',
+            statsCountries: '已访国家',
+            statsTotal: '总旅程',
+            statsCompleted: '已完成',
+            statsUpcoming: '即将出发',
+            countdownTitle: '距离下次出发',
+            countdownNone: '暂无即将出发的旅程 — 该计划一段了！',
+            countdownDays: '天',
+            countdownHours: '时',
+            countdownMinutes: '分',
+            countdownSeconds: '秒',
+            countdownToday: '你的旅程今天出发！'
         }
     },
     ms: {
@@ -222,6 +322,7 @@ export const translations = {
             settings: 'Tetapan',
             logout: 'Log Keluar',
             notification: 'Notifikasi',
+            archive: 'Arkib',
         },
         settings: {
             title: 'Tetapan',
@@ -250,6 +351,7 @@ export const translations = {
             assignedTrips: 'Perjalanan Ditetapkan',
             noAssignedTrips: 'Tiada perjalanan ditetapkan.',
             deleteUserConfirm: 'Adakah anda pasti mahu memadam pengguna ini? Tindakan ini tidak boleh dibuat asal.',
+            adminPanel: 'Panel Pentadbir',
             deleteUser: 'Padam Pengguna',
         },
         roles: {
@@ -301,9 +403,57 @@ export const translations = {
                 upcoming: 'Akan Datang',
                 ongoing: 'Sedang Berlangsung',
                 completed: 'Selesai',
+                deleted: 'Dipadam',
                 daysLeft: 'hari lagi',
                 today: 'Bermula hari ini!'
+            },
+            actions: {
+                markCompleted: 'Tanda Sebagai Selesai',
+                reopen: 'Buka Semula Perjalanan',
+                delete: 'Padam Perjalanan',
+                restore: 'Pulihkan',
+                permanentDelete: 'Padam Kekal',
+                confirmComplete: 'Tanda perjalanan ini sebagai selesai?',
+                confirmReopen: 'Buka semula perjalanan ini?',
+                confirmDelete: 'Pindahkan perjalanan ini ke arkib Dipadam? Anda boleh memulihkannya kemudian.',
+                confirmRestore: 'Pulihkan perjalanan ini?',
+                confirmPermanent: 'Padam perjalanan ini secara kekal? Tindakan ini tidak boleh dibuat asal.'
             }
+        },
+        filter: {
+            all: 'Semua',
+            upcoming: 'Akan Datang',
+            ongoing: 'Sedang Berlangsung',
+            completed: 'Selesai',
+            deleted: 'Dipadam',
+            empty: 'Tiada perjalanan dalam kategori ini.'
+        },
+        archive: {
+            title: 'Arkib',
+            subtitle: 'Perjalanan yang telah selesai atau dipadam berada di sini. Pulihkan atau buang pada bila-bila masa.'
+        },
+        home: {
+            heroTitle1: 'Temui Pengembaraan Seterusnya',
+            heroSubtitle1: 'Rancang, jejak dan kenang setiap perjalanan di satu tempat.',
+            heroTitle2: 'Mengembara Tanpa Sempadan',
+            heroSubtitle2: 'Dari lorong tersembunyi ke puncak gunung — kisah anda bermula di sini.',
+            heroTitle3: 'Mengembara Lebih Bijak, Bersama',
+            heroSubtitle3: 'Belanjawan, itinerari dan kenangan — tersusun rapi.',
+            heroCta: 'Lihat Perjalanan Saya',
+            trendingTitle: 'Destinasi Popular',
+            trendingSubtitle: 'Inspirasi untuk pengembaraan seterusnya',
+            statsTitle: 'Statistik Perjalanan Anda',
+            statsCountries: 'Negara Dilawati',
+            statsTotal: 'Jumlah Perjalanan',
+            statsCompleted: 'Selesai',
+            statsUpcoming: 'Akan Datang',
+            countdownTitle: 'Pengembaraan Seterusnya Dalam',
+            countdownNone: 'Tiada perjalanan akan datang — masa untuk merancang!',
+            countdownDays: 'hari',
+            countdownHours: 'jam',
+            countdownMinutes: 'min',
+            countdownSeconds: 'saat',
+            countdownToday: 'Perjalanan anda bermula hari ini!'
         }
     },
     ja: {
@@ -323,6 +473,7 @@ export const translations = {
             settings: '設定',
             logout: 'ログアウト',
             notification: '通知',
+            archive: 'アーカイブ',
         },
         settings: {
             title: '設定',
@@ -351,6 +502,7 @@ export const translations = {
             assignedTrips: '割り当てられた旅行',
             noAssignedTrips: '割り当てられた旅行はありません。',
             deleteUserConfirm: 'このユーザーを削除してもよろしいですか？この操作は取り消せません。',
+            adminPanel: '管理者パネル',
             deleteUser: 'ユーザー削除',
         },
         roles: {
@@ -402,9 +554,57 @@ export const translations = {
                 upcoming: '予定',
                 ongoing: '旅行中',
                 completed: '完了',
+                deleted: '削除済み',
                 daysLeft: '日後',
                 today: '今日から開始！'
+            },
+            actions: {
+                markCompleted: '完了としてマーク',
+                reopen: '旅行を再開',
+                delete: '旅行を削除',
+                restore: '復元',
+                permanentDelete: '完全に削除',
+                confirmComplete: 'この旅行を完了としてマークしますか？',
+                confirmReopen: 'この旅行を再開しますか？',
+                confirmDelete: 'この旅行を削除済みアーカイブに移動しますか？後で復元できます。',
+                confirmRestore: 'この旅行を復元しますか？',
+                confirmPermanent: 'この旅行を完全に削除しますか？元に戻すことはできません。'
             }
+        },
+        filter: {
+            all: 'すべて',
+            upcoming: '予定',
+            ongoing: '進行中',
+            completed: '完了',
+            deleted: '削除済み',
+            empty: 'このカテゴリには旅行がありません。'
+        },
+        archive: {
+            title: 'アーカイブ',
+            subtitle: '完了または削除された旅行はここに保存されます。いつでも復元または削除できます。'
+        },
+        home: {
+            heroTitle1: '次の冒険を見つけよう',
+            heroSubtitle1: 'すべての旅を一箇所で計画・追跡・追体験。',
+            heroTitle2: '国境を越えて、自由に',
+            heroSubtitle2: '隠れた路地から山頂まで — 物語はここから始まる。',
+            heroTitle3: 'もっと賢く、一緒に旅を',
+            heroSubtitle3: '予算、旅程、思い出 — すべてきれいに整理。',
+            heroCta: '私の旅行を見る',
+            trendingTitle: '人気の旅行先',
+            trendingSubtitle: '次の旅へのインスピレーション',
+            statsTitle: 'あなたの旅行データ',
+            statsCountries: '訪問した国',
+            statsTotal: '総旅行数',
+            statsCompleted: '完了',
+            statsUpcoming: '予定',
+            countdownTitle: '次の冒険まで',
+            countdownNone: '予定の旅行はありません — 計画を立てましょう！',
+            countdownDays: '日',
+            countdownHours: '時間',
+            countdownMinutes: '分',
+            countdownSeconds: '秒',
+            countdownToday: '今日が出発日です！'
         }
     },
     es: {
@@ -424,6 +624,7 @@ export const translations = {
             settings: 'Ajustes',
             logout: 'Cerrar Sesión',
             notification: 'Notificación',
+            archive: 'Archivo',
         },
         settings: {
             title: 'Ajustes',
@@ -452,6 +653,7 @@ export const translations = {
             assignedTrips: 'Viajes Asignados',
             noAssignedTrips: 'No hay viajes asignados.',
             deleteUserConfirm: '¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.',
+            adminPanel: 'Panel de Administrador',
             deleteUser: 'Eliminar Usuario',
         },
         roles: {
@@ -503,9 +705,57 @@ export const translations = {
                 upcoming: 'Próximo',
                 ongoing: 'En Curso',
                 completed: 'Completado',
+                deleted: 'Eliminado',
                 daysLeft: 'días faltan',
                 today: '¡Empieza hoy!'
+            },
+            actions: {
+                markCompleted: 'Marcar como Completado',
+                reopen: 'Reabrir Viaje',
+                delete: 'Eliminar Viaje',
+                restore: 'Restaurar',
+                permanentDelete: 'Eliminar Permanentemente',
+                confirmComplete: '¿Marcar este viaje como completado?',
+                confirmReopen: '¿Reabrir este viaje?',
+                confirmDelete: '¿Mover este viaje al archivo de Eliminados? Puede restaurarlo más tarde.',
+                confirmRestore: '¿Restaurar este viaje?',
+                confirmPermanent: '¿Eliminar permanentemente este viaje? Esto no se puede deshacer.'
             }
+        },
+        filter: {
+            all: 'Todos',
+            upcoming: 'Próximos',
+            ongoing: 'En Curso',
+            completed: 'Completados',
+            deleted: 'Eliminados',
+            empty: 'No hay viajes en esta categoría.'
+        },
+        archive: {
+            title: 'Archivo',
+            subtitle: 'Los viajes completados o eliminados se guardan aquí. Restauráralos o elimínalos en cualquier momento.'
+        },
+        home: {
+            heroTitle1: 'Descubre Tu Próxima Aventura',
+            heroSubtitle1: 'Planifica, rastrea y revive cada viaje en un solo lugar.',
+            heroTitle2: 'Viaja Sin Fronteras',
+            heroSubtitle2: 'De callejones ocultos a cumbres — tu historia empieza aquí.',
+            heroTitle3: 'Viaja Más Inteligente, Juntos',
+            heroSubtitle3: 'Presupuestos, itinerarios y recuerdos — bien organizados.',
+            heroCta: 'Ver Mis Viajes',
+            trendingTitle: 'Destinos Populares',
+            trendingSubtitle: 'Inspiración para tu próxima escapada',
+            statsTitle: 'Tus Estadísticas de Viaje',
+            statsCountries: 'Países Visitados',
+            statsTotal: 'Viajes Totales',
+            statsCompleted: 'Completados',
+            statsUpcoming: 'Próximos',
+            countdownTitle: 'Próxima Aventura En',
+            countdownNone: 'No hay viajes próximos — ¡hora de planear uno!',
+            countdownDays: 'días',
+            countdownHours: 'hrs',
+            countdownMinutes: 'min',
+            countdownSeconds: 'seg',
+            countdownToday: '¡Tu viaje empieza hoy!'
         }
     }
 };

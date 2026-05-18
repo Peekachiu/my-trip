@@ -9,7 +9,7 @@ RUN npm install
 COPY . .
 
 # Build TypeScript
-RUN npm run build
+RUN npx tsc
 
 EXPOSE 3001
 

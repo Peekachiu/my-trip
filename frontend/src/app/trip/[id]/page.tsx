@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/lib/language';
 import { useCurrency } from '@/lib/currency';
 import CreateTripForm from '@/components/CreateTripForm';
+import { useRouter } from 'next/navigation';
 
 type Expense = { id: string; amount: number; category: string; note: string; date: string; type: 'group' | 'individual'; userId: string; currency?: string; exchangeRate?: number; };
 type ItineraryItem = { id: string; day: number; time: string; title: string; description: string; url: string; date?: string; duration?: number; };
@@ -24,6 +25,9 @@ type Trip = {
     assignments: { user_id: string; personal_budget: number; username: string }[];
     assignedToIds: string[];
     budgetLogs?: { id: string; amount: number; date: string; }[];
+    isCompleted?: boolean;
+    completedAt?: string | null;
+    deletedAt?: string | null;
 };
 
 const formatTime = (time: string, durationMinutes: number = 0) => {
@@ -43,12 +47,14 @@ const formatTime = (time: string, durationMinutes: number = 0) => {
 
 export default function TripDetailsPage() {
     const { id } = useParams();
+    const router = useRouter();
     const { user } = useAuth();
     const { t } = useLanguage();
     const { format } = useCurrency();
     const [trip, setTrip] = useState<Trip | null>(null);
     const [activeTab, setActiveTab] = useState<'overview' | 'itinerary' | 'group_budget' | 'my_budget'>('overview');
     const [isEditingTrip, setIsEditingTrip] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
 
     // Forms
     const [expenseForm, setExpenseForm] = useState({ amount: '', category: 'Food', note: '', date: '', currency: 'MYR' });
@@ -106,6 +112,52 @@ export default function TripDetailsPage() {
     const [topUpAmount, setTopUpAmount] = useState('');
     const [topUpDate, setTopUpDate] = useState('');
 
+    // === Lifecycle handlers ===
+    const handleMarkCompleted = async () => {
+        if (!trip) return;
+        if (!confirm(t('trip.actions.confirmComplete'))) return;
+        setActionLoading(true);
+        await api.patch(`/trips/${trip.id}/complete`, {});
+        setActionLoading(false);
+        refreshData();
+    };
+
+    const handleReopen = async () => {
+        if (!trip) return;
+        if (!confirm(t('trip.actions.confirmReopen'))) return;
+        setActionLoading(true);
+        await api.patch(`/trips/${trip.id}/uncomplete`, {});
+        setActionLoading(false);
+        refreshData();
+    };
+
+    const handleDelete = async () => {
+        if (!trip) return;
+        if (!confirm(t('trip.actions.confirmDelete'))) return;
+        setActionLoading(true);
+        await api.delete(`/trips/${trip.id}`);
+        setActionLoading(false);
+        router.push('/dashboard');
+    };
+
+    const handleRestore = async () => {
+        if (!trip) return;
+        if (!confirm(t('trip.actions.confirmRestore'))) return;
+        setActionLoading(true);
+        await api.patch(`/trips/${trip.id}/restore`, {});
+        setActionLoading(false);
+        refreshData();
+    };
+
+    const handlePermanentDelete = async () => {
+        if (!trip) return;
+        if (!confirm(t('trip.actions.confirmPermanent'))) return;
+        setActionLoading(true);
+        await api.delete(`/trips/${trip.id}/permanent`);
+        setActionLoading(false);
+        router.push('/dashboard');
+    };
+
     const handleTopUp = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!trip || !topUpAmount) return;
@@ -147,13 +199,56 @@ export default function TripDetailsPage() {
             )}
 
             {/* Header */}
-            <div className="bg-gradient-to-r from-brand-cyan to-brand-magenta p-6 pb-12 shadow-lg rounded-b-3xl">
-                <div className="flex justify-between items-start mb-4">
-                    <Link href={user.role === 'admin' ? '/admin' : '/dashboard'} className="text-white/80 text-sm font-bold hover:text-white">← {t('trip.back')}</Link>
+            <div className={`p-6 pb-12 shadow-lg rounded-b-3xl ${trip.deletedAt ? 'bg-gradient-to-r from-gray-500 to-gray-700' : trip.isCompleted ? 'bg-gradient-to-r from-gray-400 to-brand-magenta/70' : 'bg-gradient-to-r from-brand-cyan to-brand-magenta'}`}>
+                <div className="flex justify-between items-start mb-4 flex-wrap gap-2">
+                    <Link href="/dashboard" className="text-white/80 text-sm font-bold hover:text-white">← {t('trip.back')}</Link>
                     {user.role === 'admin' && (
-                        <button onClick={() => setIsEditingTrip(true)} className="bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full text-xs font-bold transition-colors">
-                            {t('trip.editTrip')}
-                        </button>
+                        <div className="flex items-center gap-2 flex-wrap">
+                            {/* Status badge */}
+                            {trip.deletedAt && (
+                                <span className="bg-red-500/30 text-white px-2 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+                                    🗑️ {t('trip.status.deleted')}
+                                </span>
+                            )}
+                            {!trip.deletedAt && trip.isCompleted && (
+                                
+                                <span className="bg-white/30 text-white px-2 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+                                    ✅ {t('trip.status.completed')}
+                                </span>
+                            )}
+
+                            {/* Action buttons */}
+                            {!trip.deletedAt && (
+                                <button onClick={() => setIsEditingTrip(true)} className="bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full text-xs font-bold transition-colors">
+                                    {t('trip.editTrip')}
+                                </button>
+                            )}
+                            {!trip.deletedAt && !trip.isCompleted && (
+                                <button disabled={actionLoading} onClick={handleMarkCompleted} className="bg-green-500/80 hover:bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold transition-colors disabled:opacity-50">
+                                    ✅ {t('trip.actions.markCompleted')}
+                                </button>
+                            )}
+                            {!trip.deletedAt && trip.isCompleted && (
+                                <button disabled={actionLoading} onClick={handleReopen} className="bg-brand-cyan/80 hover:bg-brand-cyan text-white px-3 py-1 rounded-full text-xs font-bold transition-colors disabled:opacity-50">
+                                    ↻ {t('trip.actions.reopen')}
+                                </button>
+                            )}
+                            {!trip.deletedAt && (
+                                <button disabled={actionLoading} onClick={handleDelete} className="bg-red-500/80 hover:bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold transition-colors disabled:opacity-50">
+                                    🗑️ {t('trip.actions.delete')}
+                                </button>
+                            )}
+                            {trip.deletedAt && (
+                                <>
+                                    <button disabled={actionLoading} onClick={handleRestore} className="bg-green-500/80 hover:bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold transition-colors disabled:opacity-50">
+                                        ↻ {t('trip.actions.restore')}
+                                    </button>
+                                    <button disabled={actionLoading} onClick={handlePermanentDelete} className="bg-red-700/80 hover:bg-red-700 text-white px-3 py-1 rounded-full text-xs font-bold transition-colors disabled:opacity-50">
+                                        ⚠️ {t('trip.actions.permanentDelete')}
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     )}
                 </div>
                 <h1 className="text-3xl font-bold text-white drop-shadow-md">{trip.title}</h1>
